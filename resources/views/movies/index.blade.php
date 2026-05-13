@@ -49,7 +49,7 @@
                     </form>
                 @else
                     <a href="{{ route('login') }}" class="nav-btn">🔓 Login</a>
-                    <a href="{{ route('register') }}" class="nav-btn" style="background: linear-gradient(135deg, #ff6b6b, #ee5a6f); color: white; padding: 8px 16px; border-radius: 8px;">Daftar</a>
+                    <a href="{{ route('register') }}" class="btn-primary" style="padding: 0.5rem 1.25rem; font-size: 0.95rem;">Daftar</a>
                 @endauth
             </div>
         </div>
@@ -59,9 +59,9 @@
     <main class="main-content" style="padding-top: 80px;">
         
         @if(isset($error))
-            <div style="background: rgba(229, 9, 20, 0.2); padding: 1rem; border-radius: 8px; margin: 2rem; text-align: center; border: 1px solid var(--primary);">
-                <p>{{ $error }}</p>
-                <small>Silakan isi <code>TMDB_API_KEY</code> di file <code>.env</code> Anda.</small>
+            <div style="background: rgba(244, 63, 94, 0.1); padding: 1.5rem; border-radius: 12px; margin: 2rem; text-align: center; border: 1px solid rgba(244, 63, 94, 0.3); backdrop-filter: blur(8px);">
+                <p style="color: #fb7185; font-weight: 500; margin-bottom: 0.5rem;">{{ $error }}</p>
+                <small style="color: var(--text-muted);">Silakan isi <code>TMDB_API_KEY</code> di file <code>.env</code> Anda.</small>
             </div>
         @endif
 

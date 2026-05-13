@@ -73,7 +73,7 @@ function renderMovies(movies, container) {
         `;
         
         movieCard.addEventListener('click', () => {
-            alert(`Anda memilih film: ${movie.title}\nSinopsis: ${movie.overview}`);
+            openMovieDetail(movie.id);
         });
         
         container.appendChild(movieCard);
@@ -113,4 +113,165 @@ function scrollCarousel(id, direction) {
 
 function goHome() {
     window.location.reload();
+}
+
+let currentTrailerKey = null;
+let currentMovieId = null;
+let currentMovieTitle = null;
+
+function openMovieDetail(id) {
+    if (!id) return;
+    currentMovieId = id;
+    
+    // Fetch detail, videos, and credits
+    fetch(`${BASE_URL}/movie/${id}?api_key=${API_KEY}&append_to_response=videos,credits`)
+        .then(res => res.json())
+        .then(movie => {
+            currentMovieTitle = movie.title;
+            // Update Modal UI
+            document.getElementById('modalTitle').innerText = movie.title;
+            document.getElementById('modalOverview').innerText = movie.overview || 'Sinopsis tidak tersedia.';
+            document.getElementById('modalRating').innerText = movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A';
+            document.getElementById('modalYear').innerText = movie.release_date ? movie.release_date.substring(0, 4) : 'N/A';
+            document.getElementById('modalRuntime').innerText = movie.runtime ? `${movie.runtime} mnt` : '';
+            
+            // Poster and Backdrop
+            const posterPath = movie.poster_path ? `${IMG_URL}${movie.poster_path}` : 'https://via.placeholder.com/300x450?text=No+Poster';
+            const backdropPath = movie.backdrop_path ? `https://image.themoviedb.org/t/p/original${movie.backdrop_path}` : '';
+            
+            document.getElementById('modalPoster').src = posterPath;
+            document.getElementById('modalBackdrop').style.backgroundImage = backdropPath ? `url('${backdropPath}')` : '';
+            
+            // Genres
+            const genresContainer = document.getElementById('modalGenres');
+            if (genresContainer) {
+                genresContainer.innerHTML = movie.genres.map(g => `<span class="modal-genre-tag">${g.name}</span>`).join('');
+            }
+            
+            // Cast
+            const castContainer = document.getElementById('modalCast');
+            if (castContainer && movie.credits && movie.credits.cast) {
+                const topCast = movie.credits.cast.slice(0, 10);
+                castContainer.innerHTML = topCast.map(actor => {
+                    const profileImg = actor.profile_path ? `${IMG_URL}${actor.profile_path}` : 'https://via.placeholder.com/150?text=No+Image';
+                    return `
+                    <div class="cast-item">
+                        <img src="${profileImg}" alt="${actor.name}" class="cast-img">
+                        <div class="cast-name">${actor.name}</div>
+                        <div class="cast-char">${actor.character}</div>
+                    </div>`;
+                }).join('');
+            }
+            
+            // Trailer
+            const playBtn = document.getElementById('modalPlayBtn');
+            currentTrailerKey = null;
+            if (movie.videos && movie.videos.results) {
+                const trailer = movie.videos.results.find(vid => vid.type === 'Trailer' && vid.site === 'YouTube');
+                if (trailer) {
+                    currentTrailerKey = trailer.key;
+                }
+            }
+            
+            if (playBtn) {
+                playBtn.style.display = currentTrailerKey ? 'flex' : 'none';
+            }
+            
+            // Show modal
+            const modal = document.getElementById('movieModal');
+            if (modal) modal.classList.remove('hidden');
+        })
+        .catch(err => console.error('Error fetching movie details:', err));
+}
+
+function closeModal() {
+    const modal = document.getElementById('movieModal');
+    if (modal) modal.classList.add('hidden');
+}
+
+function playTrailer() {
+    if (!currentTrailerKey) return;
+    
+    const trailerModal = document.getElementById('trailerModal');
+    const trailerPlayer = document.getElementById('trailerPlayer');
+    const serverSwitcher = document.getElementById('serverSwitcher');
+    
+    if (serverSwitcher) serverSwitcher.style.display = 'none';
+    
+    if (trailerModal && trailerPlayer) {
+        trailerPlayer.innerHTML = `<iframe src="https://www.youtube.com/embed/${currentTrailerKey}?autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+        trailerModal.classList.remove('hidden');
+    }
+}
+
+function closeTrailer() {
+    const trailerModal = document.getElementById('trailerModal');
+    const trailerPlayer = document.getElementById('trailerPlayer');
+    
+    if (trailerModal && trailerPlayer) {
+        trailerModal.classList.add('hidden');
+        trailerPlayer.innerHTML = ''; // Stop video playing
+    }
+}
+
+let currentPlayingId = null;
+
+function playFullMovie() {
+    if (!currentMovieId) return;
+    currentPlayingId = currentMovieId;
+    openVideoModal('vidsrc_cc');
+}
+
+function playFullMovieHero() {
+    if (!window.heroMovieId) return;
+    currentPlayingId = window.heroMovieId;
+    openVideoModal('vidsrc_cc');
+}
+
+function switchServer(serverName) {
+    // Update button active state
+    const switcher = document.getElementById('serverSwitcher');
+    if (switcher) {
+        const buttons = switcher.querySelectorAll('button');
+        buttons.forEach(btn => {
+            btn.classList.remove('btn-primary');
+            btn.classList.add('btn-secondary');
+        });
+        
+        let targetIndex = 0;
+        if (serverName === 'autoembed') targetIndex = 1;
+        if (serverName === 'smashy') targetIndex = 2;
+        
+        buttons[targetIndex].classList.remove('btn-secondary');
+        buttons[targetIndex].classList.add('btn-primary');
+    }
+    
+    openVideoModal(serverName);
+}
+
+function openVideoModal(server) {
+    if (!currentPlayingId) return;
+    
+    const trailerModal = document.getElementById('trailerModal');
+    const trailerPlayer = document.getElementById('trailerPlayer');
+    const serverSwitcher = document.getElementById('serverSwitcher');
+    
+    if (serverSwitcher) serverSwitcher.style.display = 'flex';
+    
+    let url = '';
+    // Menggunakan sandbox super ketat untuk mematikan semua iklan pop-up saat diklik
+    let sandboxRules = 'allow-same-origin allow-scripts allow-forms';
+    
+    if (server === 'vidsrc_cc') {
+        url = `https://vidsrc.cc/v2/embed/movie/${currentPlayingId}`;
+    } else if (server === 'autoembed') {
+        url = `https://autoembed.co/movie/tmdb/${currentPlayingId}`;
+    } else if (server === 'smashy') {
+        url = `https://player.smashy.stream/movie/${currentPlayingId}`;
+    }
+    
+    if (trailerModal && trailerPlayer) {
+        trailerPlayer.innerHTML = `<iframe src="${url}" sandbox="${sandboxRules}" allow="autoplay; encrypted-media; fullscreen" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" style="width: 100%; height: 100%; border: none;"></iframe>`;
+        trailerModal.classList.remove('hidden');
+    }
 }

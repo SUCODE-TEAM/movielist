@@ -1,0 +1,166 @@
+{
+  "appName": "MovieList",
+  "framework": "Laravel 13",
+  "phpVersion": "8.3+",
+  "database": "SQLite",
+  "api": "TMDB API",
+  "features": [
+    "Browse Movies",
+    "Search Real-time",
+    "Movie Details",
+    "User Ratings",
+    "User Reviews",
+    "Watchlist Management",
+    "User Profiles",
+    "Authentication System",
+    "Responsive Design"
+  ],
+  "tables": {
+    "users": {
+      "columns": [
+        "id: bigint primary key",
+        "name: string",
+        "email: string unique",
+        "password: string",
+        "avatar: string nullable",
+        "bio: text nullable",
+        "email_verified_at: timestamp nullable",
+        "remember_token: string nullable",
+        "created_at: timestamp",
+        "updated_at: timestamp"
+      ]
+    },
+    "watchlists": {
+      "columns": [
+        "id: bigint primary key",
+        "user_id: bigint foreign key",
+        "movie_id: integer",
+        "title: string",
+        "overview: text nullable",
+        "poster_path: string nullable",
+        "vote_average: decimal(3,1) nullable",
+        "status: enum(watching, watched, planning)",
+        "created_at: timestamp",
+        "updated_at: timestamp"
+      ],
+      "unique": ["user_id, movie_id"]
+    },
+    "ratings": {
+      "columns": [
+        "id: bigint primary key",
+        "user_id: bigint foreign key",
+        "movie_id: integer",
+        "rating: integer (1-10)",
+        "review: text nullable",
+        "created_at: timestamp",
+        "updated_at: timestamp"
+      ],
+      "unique": ["user_id, movie_id"]
+    }
+  },
+  "controllers": [
+    {
+      "name": "MovieController",
+      "methods": [
+        "index() - Tampilkan semua film",
+        "show($movieId) - Detail film",
+        "search(Request) - Search film"
+      ]
+    },
+    {
+      "name": "Auth/LoginController",
+      "methods": [
+        "show() - Form login",
+        "store(Request) - Process login",
+        "destroy(Request) - Logout"
+      ]
+    },
+    {
+      "name": "Auth/RegisterController",
+      "methods": [
+        "show() - Form register",
+        "store(Request) - Process register"
+      ]
+    },
+    {
+      "name": "WatchlistController",
+      "methods": [
+        "index() - Lihat watchlist",
+        "store(Request) - Tambah ke watchlist",
+        "update(Request, $movieId) - Update status",
+        "destroy($movieId) - Hapus dari watchlist",
+        "byStatus($status) - Filter by status"
+      ]
+    },
+    {
+      "name": "RatingController",
+      "methods": [
+        "store(Request) - Tambah rating",
+        "destroy($movieId) - Hapus rating",
+        "myRatings() - Lihat semua rating"
+      ]
+    },
+    {
+      "name": "ProfileController",
+      "methods": [
+        "show() - Lihat profil",
+        "update(Request) - Update profil"
+      ]
+    }
+  ],
+  "routes": {
+    "public": [
+      "GET / - Home",
+      "GET /movies/{id} - Detail film",
+      "GET /api/search?q=... - Search API"
+    ],
+    "guest": [
+      "GET /register - Form register",
+      "POST /register - Submit register",
+      "GET /login - Form login",
+      "POST /login - Submit login"
+    ],
+    "protected": [
+      "POST /logout - Logout",
+      "GET /watchlist - Lihat watchlist",
+      "POST /watchlist - Tambah ke watchlist",
+      "PUT /watchlist/{id} - Update status",
+      "DELETE /watchlist/{id} - Hapus dari watchlist",
+      "GET /watchlist/status/{status} - Filter",
+      "POST /ratings - Tambah rating",
+      "DELETE /ratings/{id} - Hapus rating",
+      "GET /my-ratings - Lihat rating",
+      "GET /profile - Lihat profil",
+      "PUT /profile - Update profil"
+    ]
+  },
+  "views": [
+    "auth/login.blade.php",
+    "auth/register.blade.php",
+    "movies/index.blade.php",
+    "movies/show.blade.php",
+    "watchlist/index.blade.php",
+    "ratings/index.blade.php",
+    "profile/show.blade.php"
+  ],
+  "models": [
+    "User - Model pengguna",
+    "Watchlist - Model watchlist",
+    "Rating - Model rating"
+  ],
+  "apiEndpoints": [
+    "GET /trending/movie/week - Film trending",
+    "GET /movie/popular - Film populer",
+    "GET /movie/now_playing - Film sedang tayang",
+    "GET /movie/top_rated - Film rating tertinggi",
+    "GET /movie/upcoming - Film akan datang",
+    "GET /movie/{id} - Detail film",
+    "GET /movie/{id}/credits - Cast dan crew",
+    "GET /movie/{id}/recommendations - Rekomendasi",
+    "GET /search/movie?query=... - Pencarian"
+  ],
+  "demoAccount": {
+    "email": "demo@movielist.test",
+    "password": "password123"
+  }
+}

@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MovieList - Platform terbaik untuk menemukan dan menonton film favorit Anda. Jelajahi ribuan film dengan trailer, rating, dan ulasan lengkap.">
+    <meta name="keywords" content="movie, film, nonton, streaming, trailer, review, rating">
+    <meta name="author" content="MovieList">
+    <title>MovieList - Nonton Film Gratis | Katalog Film Terlengkap</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <div class="bg-gradient-1"></div>
+        <div class="bg-gradient-2"></div>
+        <div class="bg-gradient-3"></div>
+    </div>
+
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loader">
+            <div class="loader-film">
+                <div class="film-strip">
+                    <div class="film-frame"></div>
+                    <div class="film-frame"></div>
+                    <div class="film-frame"></div>
+                    <div class="film-frame"></div>
+                </div>
+            </div>
+            <p class="loader-text">Memuat Film...</p>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav id="navbar" class="navbar">
+        <div class="nav-container">
+            <a href="#" class="nav-logo" id="navLogo" onclick="goHome()">
+                <span class="logo-icon">🎬</span>
+                <span class="logo-text">Movie<span class="logo-accent">List</span></span>
+            </a>
+            <div class="nav-search" id="navSearch">
+                <div class="search-wrapper">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="m21 21-4.35-4.35"/>
+                    </svg>
+                    <input type="text" id="searchInput" class="search-input" placeholder="Cari film favorit kamu..." autocomplete="off">
+                    <button id="clearSearch" class="clear-search hidden" onclick="clearSearch()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 6 6 18M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+                <div id="searchSuggestions" class="search-suggestions hidden"></div>
+            </div>
+            <div class="nav-actions">
+                <button id="genreToggle" class="nav-btn" onclick="toggleGenrePanel()" title="Genre">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+                <button id="watchlistBtn" class="nav-btn" onclick="showWatchlist()" title="Watchlist">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    <span id="watchlistCount" class="badge hidden">0</span>
+                </button>
+            </div>
+            <button class="nav-mobile-toggle" id="mobileMenuToggle" onclick="toggleMobileMenu()">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Genre Panel -->
+    <div id="genrePanel" class="genre-panel hidden">
+        <div class="genre-panel-content">
+            <div class="genre-header">
+                <h3>🎭 Genre Film</h3>
+                <button onclick="toggleGenrePanel()" class="genre-close">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6 6 18M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <div id="genreList" class="genre-list"></div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main id="mainContent" class="main-content">
+        <!-- Hero Section -->
+        <section id="heroSection" class="hero-section">
+            <div id="heroBackdrop" class="hero-backdrop"></div>
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <div class="hero-badge" id="heroBadge">🔥 Trending Hari Ini</div>
+                <h1 id="heroTitle" class="hero-title">Memuat...</h1>
+                <p id="heroOverview" class="hero-overview">Memuat deskripsi film...</p>
+                <div class="hero-meta" id="heroMeta">
+                    <span class="hero-rating">
+                        <svg viewBox="0 0 24 24" fill="currentColor" class="star-icon">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                        </svg>
+                        <span id="heroRating">0.0</span>
+                    </span>
+                    <span class="hero-year" id="heroYear">2026</span>
+                    <span class="hero-lang" id="heroLang">EN</span>
+                </div>
+                <div class="hero-actions">
+                    <button class="btn-primary" id="heroWatchBtn" onclick="openMovieDetail(heroMovieId)">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <polygon points="5 3 19 12 5 21 5 3"/>
+                        </svg>
+                        Tonton Sekarang
+                    </button>
+                    <button class="btn-secondary" id="heroInfoBtn" onclick="openMovieDetail(heroMovieId)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 16v-4M12 8h.01"/>
+                        </svg>
+                        Info Detail
+                    </button>
+                </div>
+            </div>
+            <div class="hero-scroll-indicator">
+                <div class="scroll-mouse">
+                    <div class="scroll-wheel"></div>
+                </div>
+                <span>Scroll untuk jelajahi</span>
+            </div>
+        </section>
+
+        <!-- Trending Section -->
+        <section class="movie-section" id="trendingSection">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="title-icon">🔥</span>
+                    Trending Minggu Ini
+                </h2>
+                <button class="see-all-btn" onclick="showCategory('trending')">Lihat Semua →</button>
+            </div>
+            <div class="movie-carousel" id="trendingCarousel">
+                <button class="carousel-btn carousel-prev" onclick="scrollCarousel('trendingCarousel', -1)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+                </button>
+                <div class="movie-row" id="trendingRow"></div>
+                <button class="carousel-btn carousel-next" onclick="scrollCarousel('trendingCarousel', 1)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+                </button>
+            </div>
+        </section>
+
+        <!-- Now Playing Section -->
+        <section class="movie-section" id="nowPlayingSection">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="title-icon">🎥</span>
+                    Sedang Tayang
+                </h2>
+                <button class="see-all-btn" onclick="showCategory('now_playing')">Lihat Semua →</button>
+            </div>
+            <div class="movie-carousel" id="nowPlayingCarousel">
+                <button class="carousel-btn carousel-prev" onclick="scrollCarousel('nowPlayingCarousel', -1)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+                </button>
+                <div class="movie-row" id="nowPlayingRow"></div>
+                <button class="carousel-btn carousel-next" onclick="scrollCarousel('nowPlayingCarousel', 1)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+                </button>
+            </div>
+        </section>
+
+        <!-- Top Rated Section -->
+        <section class="movie-section" id="topRatedSection">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="title-icon">⭐</span>
+                    Rating Tertinggi
+                </h2>
+                <button class="see-all-btn" onclick="showCategory('top_rated')">Lihat Semua →</button>
+            </div>
+            <div class="movie-carousel" id="topRatedCarousel">
+                <button class="carousel-btn carousel-prev" onclick="scrollCarousel('topRatedCarousel', -1)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+                </button>
+                <div class="movie-row" id="topRatedRow"></div>
+                <button class="carousel-btn carousel-next" onclick="scrollCarousel('topRatedCarousel', 1)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+                </button>
+            </div>
+        </section>
+
+        <!-- Upcoming Section -->
+        <section class="movie-section" id="upcomingSection">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="title-icon">🎬</span>
+                    Segera Tayang
+                </h2>
+                <button class="see-all-btn" onclick="showCategory('upcoming')">Lihat Semua →</button>
+            </div>
+            <div class="movie-carousel" id="upcomingCarousel">
+                <button class="carousel-btn carousel-prev" onclick="scrollCarousel('upcomingCarousel', -1)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+                </button>
+                <div class="movie-row" id="upcomingRow"></div>
+                <button class="carousel-btn carousel-next" onclick="scrollCarousel('upcomingCarousel', 1)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+                </button>
+            </div>
+        </section>
+
+        <!-- Popular Section -->
+        <section class="movie-section" id="popularSection">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="title-icon">💎</span>
+                    Film Populer
+                </h2>
+                <button class="see-all-btn" onclick="showCategory('popular')">Lihat Semua →</button>
+            </div>
+            <div class="movie-carousel" id="popularCarousel">
+                <button class="carousel-btn carousel-prev" onclick="scrollCarousel('popularCarousel', -1)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+                </button>
+                <div class="movie-row" id="popularRow"></div>
+                <button class="carousel-btn carousel-next" onclick="scrollCarousel('popularCarousel', 1)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Category View (Grid) -->
+    <div id="categoryView" class="category-view hidden">
+        <div class="category-header">
+            <button class="back-btn" onclick="goHome()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+                Kembali
+            </button>
+            <h2 id="categoryTitle" class="category-title">Kategori</h2>
+            <div class="category-sort">
+                <select id="categorySort" onchange="sortCategory()">
+                    <option value="popularity.desc">Popularitas ↓</option>
+                    <option value="popularity.asc">Popularitas ↑</option>
+                    <option value="vote_average.desc">Rating ↓</option>
+                    <option value="vote_average.asc">Rating ↑</option>
+                    <option value="release_date.desc">Terbaru</option>
+                    <option value="release_date.asc">Terlama</option>
+                </select>
+            </div>
+        </div>
+        <div id="categoryGrid" class="movie-grid"></div>
+        <div id="categoryLoader" class="category-loader hidden">
+            <div class="spinner"></div>
+            <p>Memuat lebih banyak film...</p>
+        </div>
+    </div>
+
+    <!-- Search Results View -->
+    <div id="searchView" class="category-view hidden">
+        <div class="category-header">
+            <button class="back-btn" onclick="goHome()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+                Kembali
+            </button>
+            <h2 id="searchTitle" class="category-title">Hasil Pencarian</h2>
+        </div>
+        <div id="searchGrid" class="movie-grid"></div>
+        <div id="searchLoader" class="category-loader hidden">
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+    <!-- Watchlist View -->
+    <div id="watchlistView" class="category-view hidden">
+        <div class="category-header">
+            <button class="back-btn" onclick="goHome()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+                Kembali
+            </button>
+            <h2 class="category-title">📋 Watchlist Saya</h2>
+        </div>
+        <div id="watchlistGrid" class="movie-grid"></div>
+        <div id="watchlistEmpty" class="empty-state hidden">
+            <div class="empty-icon">📋</div>
+            <h3>Watchlist Kosong</h3>
+            <p>Tambahkan film ke watchlist untuk menontonnya nanti!</p>
+            <button class="btn-primary" onclick="goHome()">Jelajahi Film</button>
+        </div>
+    </div>
+
+    <!-- Movie Detail Modal -->
+    <div id="movieModal" class="movie-modal hidden">
+        <div class="modal-backdrop" onclick="closeModal()"></div>
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 6 6 18M6 6l12 12"/>
+                </svg>
+            </button>
+            <div class="modal-hero">
+                <div id="modalBackdrop" class="modal-backdrop-img"></div>
+                <div class="modal-hero-overlay"></div>
+                <div class="modal-hero-content">
+                    <div class="modal-poster">
+                        <img id="modalPoster" src="" alt="Movie Poster">
+                    </div>
+                    <div class="modal-info">
+                        <h1 id="modalTitle" class="modal-title"></h1>
+                        <div class="modal-meta">
+                            <span class="modal-rating" id="modalRating">
+                                <svg viewBox="0 0 24 24" fill="currentColor" class="star-icon">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                </svg>
+                                <span>0.0</span>
+                            </span>
+                            <span id="modalYear" class="modal-year"></span>
+                            <span id="modalRuntime" class="modal-runtime"></span>
+                            <span id="modalLang" class="modal-lang"></span>
+                        </div>
+                        <div id="modalGenres" class="modal-genres"></div>
+                        <div class="modal-actions">
+                            <button class="btn-primary btn-play" id="modalPlayBtn" onclick="playTrailer()">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <polygon points="5 3 19 12 5 21 5 3"/>
+                                </svg>
+                                Tonton Trailer
+                            </button>
+                            <button class="btn-icon" id="modalWatchlistBtn" onclick="toggleWatchlist()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+                                </svg>
+                            </button>
+                            <button class="btn-icon" id="modalShareBtn" onclick="shareMovie()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+                                    <path d="m8.59 13.51 6.83 3.98M15.41 6.51l-6.82 3.98"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="modal-section">
+                    <h3>📖 Sinopsis</h3>
+                    <p id="modalOverview" class="modal-overview"></p>
+                </div>
+                <div class="modal-section" id="modalTrailerSection" style="display:none;">
+                    <h3>🎬 Trailer</h3>
+                    <div id="modalTrailer" class="modal-trailer"></div>
+                </div>
+                <div class="modal-section">
+                    <h3>🎭 Pemeran</h3>
+                    <div id="modalCast" class="modal-cast"></div>
+                </div>
+                <div class="modal-section">
+                    <h3>📊 Informasi</h3>
+                    <div id="modalDetails" class="modal-details-grid"></div>
+                </div>
+                <div class="modal-section">
+                    <h3>🎬 Film Serupa</h3>
+                    <div id="modalSimilar" class="modal-similar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trailer Modal -->
+    <div id="trailerModal" class="trailer-modal hidden">
+        <div class="trailer-backdrop" onclick="closeTrailer()"></div>
+        <div class="trailer-content">
+            <button class="modal-close" onclick="closeTrailer()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 6 6 18M6 6l12 12"/>
+                </svg>
+            </button>
+            <div id="trailerPlayer" class="trailer-player"></div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden">
+        <div class="toast-content">
+            <span id="toastIcon" class="toast-icon">✅</span>
+            <span id="toastMessage" class="toast-message"></span>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer" id="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <span class="logo-icon">🎬</span>
+                <span class="logo-text">Movie<span class="logo-accent">List</span></span>
+                <p class="footer-tagline">Platform terbaik untuk menemukan film favorit kamu</p>
+            </div>
+            <div class="footer-links">
+                <div class="footer-col">
+                    <h4>Jelajahi</h4>
+                    <a href="#" onclick="showCategory('trending')">Trending</a>
+                    <a href="#" onclick="showCategory('popular')">Populer</a>
+                    <a href="#" onclick="showCategory('top_rated')">Top Rated</a>
+                    <a href="#" onclick="showCategory('upcoming')">Upcoming</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Info</h4>
+                    <a href="#">Tentang Kami</a>
+                    <a href="#">Kontak</a>
+                    <a href="#">FAQ</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 MovieList. Data film disediakan oleh <a href="https://www.themoviedb.org/" target="_blank" rel="noopener">TMDB</a>.</p>
+                <p class="footer-disclaimer">This product uses the TMDB API but is not endorsed or certified by TMDB.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

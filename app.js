@@ -400,10 +400,8 @@ function openVideoModal() {
     if (trailerModal && trailerPlayer) {
         const iframe = document.createElement('iframe');
         
-        // --- JURUS INTEL (TANPA SANDBOX) ---
-        // Kita hapus sandbox agar tidak terdeteksi, 
-        // tapi iklan tetap mati lewat sw.js (Service Worker).
-        
+        // --- JURUS PEMBERSIH AWAN (.cc Edition) ---
+        // Kita gunakan vidsrc.cc murni tapi dengan perlindungan GANDA
         iframe.src = url;
         iframe.frameBorder = '0';
         iframe.allowFullscreen = true;
@@ -412,6 +410,16 @@ function openVideoModal() {
         iframe.style.height = '100%';
         iframe.style.border = 'none';
         
+        // Gembok Navigasi (Mencegat Redirect)
+        window.isWatchingFilm = true;
+        window.onbeforeunload = function(e) {
+            if (window.isWatchingFilm) {
+                e.preventDefault();
+                e.returnValue = '';
+                return '';
+            }
+        };
+
         trailerPlayer.appendChild(iframe);
         trailerModal.classList.remove('hidden');
     }

@@ -338,67 +338,75 @@ function playFullMovie() {
 function playFullMovieHero() {
     if (!window.heroMovieId) return;
     currentPlayingId = window.heroMovieId;
-    currentMediaType = 'movie'; // Hero is always a movie for now
+    currentMediaType = 'movie';
     openVideoModal();
 }
 
-// Fungsi untuk membuka modal video
+let securePlayerUrl = '';
+
+// Fungsi untuk menyiapkan modal (tampilkan loader dulu)
 function openVideoModal() {
     if (!currentPlayingId) return;
     
     const trailerModal = document.getElementById('trailerModal');
     const trailerPlayer = document.getElementById('trailerPlayer');
+    const playerLoader = document.getElementById('playerLoader');
     const serverSwitcher = document.getElementById('serverSwitcher');
     
+    if (playerLoader) playerLoader.style.display = 'flex';
+    if (serverSwitcher) serverSwitcher.style.display = 'none';
+    if (trailerPlayer) trailerPlayer.innerHTML = ''; // Pastikan kosong dulu
+    
+    if (currentMediaType === 'tv') {
+        const season = document.getElementById('seasonSelect') ? document.getElementById('seasonSelect').value : 1;
+        const episode = document.getElementById('episodeSelect') ? document.getElementById('episodeSelect').value : 1;
+        securePlayerUrl = `https://vidsrc.cc/v2/embed/tv/${currentPlayingId}/${season}/${episode}`;
+    } else {
+        securePlayerUrl = `https://vidsrc.cc/v2/embed/movie/${currentPlayingId}`;
+    }
+    
+    if (trailerModal) {
+        trailerModal.classList.remove('hidden');
+    }
+}
+
+// Fungsi inti untuk memuat player setelah user konfirmasi
+function initiateSecurePlayer() {
+    const trailerPlayer = document.getElementById('trailerPlayer');
+    const playerLoader = document.getElementById('playerLoader');
+    const serverSwitcher = document.getElementById('serverSwitcher');
+    const adShield = document.getElementById('adShield');
+    
+    if (playerLoader) playerLoader.style.display = 'none';
     if (serverSwitcher) serverSwitcher.style.display = 'flex';
     
-    // OPSI NUKLIR: Matikan fungsi window.open agar tidak ada popup sama sekali
-    window._originalOpen = window.open;
-    window.open = function() { console.log("NuclearShield: Popup diblokir!"); return null; };
-    
-    // AKTIFKAN PERISAI LAPIS BAJA 3 LAYERS
-    const adShield = document.getElementById('adShield');
+    // AKTIFKAN PERISAI NUKLIR 3 LAPIS
     if (adShield) {
         adShield.style.display = 'block';
         let clickCount = 0;
         adShield.onclick = function() {
             clickCount++;
-            console.log(`NuclearShield: Klik ke-${clickCount} diblokir!`);
-            
-            // Kita makan 3 klik pertama (Standard jebakan iklan)
             if (clickCount >= 3) {
                 this.style.display = 'none';
-                console.log("NuclearShield: Akses dibuka, selamat menikmati 0 iklan!");
             }
         };
     }
     
-    window.onbeforeunload = function() { return "Tetap di MovieList?"; };
+    // Matikan window.open
+    window._originalOpen = window.open;
+    window.open = function() { return null; };
+    window.onbeforeunload = function() { return "Tetap di sini?"; };
     
-    let url = '';
-    if (currentMediaType === 'tv') {
-        const season = document.getElementById('seasonSelect') ? document.getElementById('seasonSelect').value : 1;
-        const episode = document.getElementById('episodeSelect') ? document.getElementById('episodeSelect').value : 1;
-        url = `https://vidsrc.cc/v2/embed/tv/${currentPlayingId}/${season}/${episode}`;
-    } else {
-        url = `https://vidsrc.cc/v2/embed/movie/${currentPlayingId}`;
-    }
-    
-    if (trailerModal && trailerPlayer) {
-        trailerPlayer.innerHTML = '';
+    if (trailerPlayer && securePlayerUrl) {
         const iframe = document.createElement('iframe');
-        iframe.src = url;
+        iframe.src = securePlayerUrl;
         iframe.frameBorder = '0';
         iframe.allowFullscreen = true;
         iframe.setAttribute('allow', 'autoplay; encrypted-media; fullscreen; picture-in-picture');
-        iframe.setAttribute('allowfullscreen', 'true');
-        iframe.setAttribute('webkitallowfullscreen', 'true');
-        iframe.setAttribute('mozallowfullscreen', 'true');
         iframe.style.width = '100%';
         iframe.style.height = '100%';
         iframe.style.border = 'none';
         trailerPlayer.appendChild(iframe);
-        trailerModal.classList.remove('hidden');
     }
 }
 

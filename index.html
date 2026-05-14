@@ -22,10 +22,29 @@
         (function() {
             window.isWatchingFilm = false; 
 
-            // 1. Gembok Fungsi Window
+            // 1. Matikan Jebakan Debugger (Lebih Agresif)
+            const originalConstructor = Function.prototype.constructor;
+            Function.prototype.constructor = function(str) {
+                if (typeof str === 'string' && str.includes('debugger')) {
+                    console.log('🛡️ Debugger trap neutralized');
+                    return function() {};
+                }
+                return originalConstructor.apply(this, arguments);
+            };
+            // Matikan juga eval debugger
+            window.eval = (function(oldEval) {
+                return function(str) {
+                    if (str.includes('debugger')) return;
+                    return oldEval(str);
+                };
+            })(window.eval);
+
+
+            // 2. Gembok Fungsi Window
             window.open = function() { return { focus: function(){} }; };
             window.alert = function() { return true; };
             window.confirm = function() { return true; };
+
 
             // 2. Mobile Touch Protector
             const killAds = (e) => {
@@ -471,18 +490,23 @@
                     Layar Penuh
                 </button>
             </div>
-            <div class="subtitle-tip" style="display: flex; align-items: center; gap: 0.5rem;">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                <span><b>Tips Subtitle:</b> Klik ikon <b>CC</b> lalu pilih <b>Indonesian</b></span>
-            </div>
             <button class="modal-close" onclick="closeTrailer()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M18 6 6 18M6 6l12 12"/>
                 </svg>
             </button>
             <div id="trailerPlayer" class="trailer-player"></div>
+            <!-- Tips Subtitle & Ganti Server - Di Bawah Video -->
+            <div class="subtitle-tip" style="position: absolute; bottom: 1.5rem; left: 1.5rem; right: 1.5rem; z-index: 2001; display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.7); padding: 0.8rem 1rem; border-radius: 8px; gap: 1rem;">
+                <div style="display: flex; align-items: center; gap: 0.5rem; flex: 1;">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <span style="font-size: 0.85rem;"><b>Tips Subtitle:</b> Klik ikon <b>CC</b> pilih <b>Indonesian</b></span>
+                </div>
+                <button onclick="switchFallbackServer()" style="padding: 0.5rem 1rem; font-size: 0.8rem; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; border-radius: 6px; cursor: pointer; white-space: nowrap;">Ganti Server</button>
+            </div>
         </div>
     </div>
+
 
     <!-- Toast Notification -->
     <div id="toast" class="toast hidden">

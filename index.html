@@ -6,12 +6,18 @@
     <meta name="description" content="MovieList - Platform terbaik untuk menemukan dan menonton film favorit Anda. Jelajahi ribuan film dengan trailer, rating, dan ulasan lengkap.">
     <meta name="keywords" content="movie, film, nonton, streaming, trailer, review, rating">
     <meta name="author" content="MovieList">
-    <!-- Gembok Navigasi Mutlak: Mencegah browser pindah ke Shopee/Iklan -->
-    <meta http-equiv="Content-Security-Policy" content="form-action 'self'; upgrade-insecure-requests; connect-src 'self' *.themoviedb.org *.tmdb.org *.vidsrc.cc; script-src 'self' 'unsafe-inline' 'unsafe-eval' *.themoviedb.org *.tmdb.org *.vidsrc.cc; navigate-to 'self' *.themoviedb.org *.vidsrc.cc;">
     <title>MovieList - Nonton Film Gratis | Katalog Film Terlengkap</title>
     <script>
+        // --- PEMBERSIH SERVICE WORKER (PAKSA) ---
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for(let registration of registrations) {
+                    registration.unregister();
+                }
+            });
+        }
+
         // --- GLOBAL STEALTH HIJACKER ---
-        // Kita membajak cetak biru Iframe agar otomatis ter-sandbox tanpa terdeteksi
         (function() {
             const originalSetAttribute = HTMLIFrameElement.prototype.setAttribute;
             HTMLIFrameElement.prototype.setAttribute = function(name, value) {

@@ -1,6 +1,9 @@
 const API_KEY = 'c88c94f12fcd99e29851e05850e1950f';
 const BASE_URL = 'https://api.themoviedb.org/3';
-const RESOLVER_URL = 'http://localhost:3000/api/resolve'; // Alamat Backend Resolver kita
+
+// --- SMART RESOLVER DISCOVERY ---
+// Ini otomatis ngikutin alamat IP laptop biar bisa diakses dari HP
+const RESOLVER_URL = `http://${window.location.hostname}:3000/api/resolve`;
 
 let playerInstance = null; // Penampung Player Sultan
 const IMG_URL = 'https://media.themoviedb.org/t/p/w500';

@@ -351,13 +351,20 @@ function openVideoModal() {
     
     if (serverSwitcher) serverSwitcher.style.display = 'flex';
     
-    // AKTIFKAN PERISAI LAPIS BAJA
+    // AKTIFKAN PERISAI LAPIS BAJA GANDA
     const adShield = document.getElementById('adShield');
     if (adShield) {
         adShield.style.display = 'block';
+        let clickCount = 0;
         adShield.onclick = function() {
-            this.style.display = 'none'; // Matikan perisai setelah memakan klik iklan
-            console.log("AdShield: Iklan pertama berhasil diblokir!");
+            clickCount++;
+            console.log(`AdShield: Klik ke-${clickCount} diblokir!`);
+            
+            // Kita makan 2 klik pertama yang biasanya adalah jebakan iklan
+            if (clickCount >= 2) {
+                this.style.display = 'none';
+                console.log("AdShield: Perisai dibuka, selamat menonton!");
+            }
         };
     }
     

@@ -9,6 +9,33 @@
     <!-- Gembok Navigasi Mutlak: Mencegah browser pindah ke Shopee/Iklan -->
     <meta http-equiv="Content-Security-Policy" content="form-action 'self'; upgrade-insecure-requests; connect-src 'self' *.themoviedb.org *.tmdb.org *.vidsrc.cc; script-src 'self' 'unsafe-inline' 'unsafe-eval' *.themoviedb.org *.tmdb.org *.vidsrc.cc; navigate-to 'self' *.themoviedb.org *.vidsrc.cc;">
     <title>MovieList - Nonton Film Gratis | Katalog Film Terlengkap</title>
+    <script>
+        // --- GLOBAL STEALTH HIJACKER ---
+        // Kita membajak cetak biru Iframe agar otomatis ter-sandbox tanpa terdeteksi
+        (function() {
+            const originalSetAttribute = HTMLIFrameElement.prototype.setAttribute;
+            HTMLIFrameElement.prototype.setAttribute = function(name, value) {
+                if (name === 'src' && value.includes('vidsrc')) {
+                    // Otomatis pasang gembok siluman
+                    originalSetAttribute.call(this, 'sandbox', 'allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-presentation allow-same-origin allow-scripts allow-top-navigation allow-top-navigation-by-user-activation');
+                }
+                return originalSetAttribute.apply(this, arguments);
+            };
+
+            // Kebohongan Global: Bilang kalau kita GAK punya sandbox
+            const originalGetAttribute = HTMLIFrameElement.prototype.getAttribute;
+            HTMLIFrameElement.prototype.getAttribute = function(name) {
+                if (name === 'sandbox') return null;
+                return originalGetAttribute.apply(this, arguments);
+            };
+
+            const originalHasAttribute = HTMLIFrameElement.prototype.hasAttribute;
+            HTMLIFrameElement.prototype.hasAttribute = function(name) {
+                if (name === 'sandbox') return false;
+                return originalHasAttribute.apply(this, arguments);
+            };
+        })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">

@@ -1,12 +1,3 @@
-// DAFTARKAN INTEL PENCEGAT IKLAN (Service Worker)
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-            .then(() => console.log("Intel Pencegat Iklan Aktif!"))
-            .catch(err => console.error("Intel Gagal Aktif:", err));
-    });
-}
-
 const API_KEY = 'c88c94f12fcd99e29851e05850e1950f';
 const BASE_URL = 'https://api.themoviedb.org/3';
 const IMG_URL = 'https://media.themoviedb.org/t/p/w500';

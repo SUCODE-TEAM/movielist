@@ -329,12 +329,13 @@ function playTrailer() {
 function closeTrailer() {
     const trailerModal = document.getElementById('trailerModal');
     const trailerPlayer = document.getElementById('trailerPlayer');
-
+    
     if (trailerModal && trailerPlayer) {
+        window.isWatchingFilm = false; // Buka gembok agar bisa tutup modal
         trailerModal.classList.add('hidden');
-        trailerPlayer.innerHTML = ''; // Stop video playing
-        window.onbeforeunload = null;
-        window.open = window._originalOpen || window.open; // Kembalikan fungsi window.open
+        trailerPlayer.innerHTML = ''; 
+        window.onbeforeunload = null; 
+        window.open = window._originalOpen || window.open;
     }
 }
 
@@ -363,17 +364,22 @@ function openVideoModal() {
     if (serverSwitcher) serverSwitcher.style.display = 'flex';
     if (trailerPlayer) trailerPlayer.innerHTML = '';
 
-    // --- NATURAL ADBLOCKER ALAMI ---
-    // 1. Matikan fungsi popup total
-    window._originalOpen = window.open;
-    window.open = function () { return null; };
+    // --- GEMBOK ANTI-REDIRECT MUTLAK ---
+    window.isWatchingFilm = true; // Flag untuk mengaktifkan gembok
     
-    // 2. Anti-Redirect Wall: Menahan agar tetap di halaman ini
-    window.onbeforeunload = function() {
-        return "Film sedang diputar. Jangan tinggalkan halaman ini agar tidak terkena redirect iklan!";
+    // Gembok fungsi window.open (Popup)
+    window.open = function () { return null; };
+
+    // Pasang Gembok Pintu Keluar
+    window.onbeforeunload = function(e) {
+        if (window.isWatchingFilm) {
+            e.preventDefault();
+            e.returnValue = ''; // Munculkan dialog konfirmasi browser
+            return '';
+        }
     };
 
-    // 3. Perisai Klik Siluman
+    // Perisai Klik Siluman (1 Lapis)
     if (adShield) {
         adShield.style.display = 'block';
         adShield.onclick = function (e) {

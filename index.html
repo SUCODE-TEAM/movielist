@@ -81,7 +81,7 @@
     <div id="genrePanel" class="genre-panel hidden">
         <div class="genre-panel-content">
             <div class="genre-header">
-                <h3>🎭 Genre Film</h3>
+                <h3 style="display: flex; align-items: center; gap: 0.5rem;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg> Genre Film</h3>
                 <button onclick="toggleGenrePanel()" class="genre-close">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M18 6 6 18M6 6l12 12"/>
@@ -99,7 +99,9 @@
             <div id="heroBackdrop" class="hero-backdrop"></div>
             <div class="hero-overlay"></div>
             <div class="hero-content">
-                <div class="hero-badge" id="heroBadge">🔥 Trending Hari Ini</div>
+                <div class="hero-badge" id="heroBadge">
+                    🔥 Top Trending
+                </div>
                 <h1 id="heroTitle" class="hero-title">Memuat...</h1>
                 <p id="heroOverview" class="hero-overview">Memuat deskripsi film...</p>
                 <div class="hero-meta" id="heroMeta">
@@ -136,12 +138,23 @@
             </div>
         </section>
 
+        <!-- Genre Results Section -->
+        <section id="genreResultsSection" class="hidden" style="padding: 8rem 2rem 2rem 2rem;">
+            <div class="category-header">
+                <h2 id="genreResultsTitle" class="category-title">Hasil Genre: </h2>
+                <button onclick="goHome()" class="btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.8rem;">
+                    Tutup Filter
+                </button>
+            </div>
+            <div id="genreResultsGrid" class="movie-grid"></div>
+        </section>
+
         <!-- Trending Section -->
         <section class="movie-section" id="trendingSection">
             <div class="section-header">
                 <h2 class="section-title">
                     <span class="title-icon">🔥</span>
-                    Trending Minggu Ini
+                    Top Trending
                 </h2>
                 <button class="see-all-btn" onclick="showCategory('trending')">Lihat Semua →</button>
             </div>
@@ -160,7 +173,7 @@
         <section class="movie-section" id="nowPlayingSection">
             <div class="section-header">
                 <h2 class="section-title">
-                    <span class="title-icon">🎥</span>
+                    <span class="title-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg></span>
                     Sedang Tayang
                 </h2>
                 <button class="see-all-btn" onclick="showCategory('now_playing')">Lihat Semua →</button>
@@ -180,7 +193,7 @@
         <section class="movie-section" id="topRatedSection">
             <div class="section-header">
                 <h2 class="section-title">
-                    <span class="title-icon">⭐</span>
+                    <span class="title-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="var(--primary)" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></span>
                     Rating Tertinggi
                 </h2>
                 <button class="see-all-btn" onclick="showCategory('top_rated')">Lihat Semua →</button>
@@ -200,7 +213,7 @@
         <section class="movie-section" id="upcomingSection">
             <div class="section-header">
                 <h2 class="section-title">
-                    <span class="title-icon">🎬</span>
+                    <span class="title-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></span>
                     Segera Tayang
                 </h2>
                 <button class="see-all-btn" onclick="showCategory('upcoming')">Lihat Semua →</button>
@@ -220,7 +233,7 @@
         <section class="movie-section" id="popularSection">
             <div class="section-header">
                 <h2 class="section-title">
-                    <span class="title-icon">💎</span>
+                    <span class="title-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></span>
                     Film Populer
                 </h2>
                 <button class="see-all-btn" onclick="showCategory('popular')">Lihat Semua →</button>
@@ -326,6 +339,10 @@
                             <span id="modalLang" class="modal-lang"></span>
                         </div>
                         <div id="modalGenres" class="modal-genres"></div>
+                        <div id="tvControls" class="tv-controls hidden" style="margin-bottom: 1.5rem; display: flex; gap: 1rem; align-items: center;">
+                            <select id="seasonSelect" class="tv-select" onchange="loadEpisodes()"></select>
+                            <select id="episodeSelect" class="tv-select"></select>
+                        </div>
                         <div class="modal-actions">
                             <button class="btn-primary" id="modalWatchMovieBtn" onclick="playFullMovie()">
                                 <svg viewBox="0 0 24 24" fill="currentColor">
@@ -356,24 +373,32 @@
             </div>
             <div class="modal-body">
                 <div class="modal-section">
-                    <h3>📖 Sinopsis</h3>
+                    <h3 style="display:flex;align-items:center;gap:0.5rem;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg> Sinopsis</h3>
                     <p id="modalOverview" class="modal-overview"></p>
                 </div>
                 <div class="modal-section" id="modalTrailerSection" style="display:none;">
-                    <h3>🎬 Trailer</h3>
+                    <h3 style="display:flex;align-items:center;gap:0.5rem;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg> Trailer</h3>
                     <div id="modalTrailer" class="modal-trailer"></div>
                 </div>
                 <div class="modal-section">
-                    <h3>🎭 Pemeran</h3>
+                    <h3 style="display:flex;align-items:center;gap:0.5rem;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> Pemeran</h3>
                     <div id="modalCast" class="modal-cast"></div>
                 </div>
                 <div class="modal-section">
-                    <h3>📊 Informasi</h3>
+                    <h3 style="display:flex;align-items:center;gap:0.5rem;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg> Informasi</h3>
                     <div id="modalDetails" class="modal-details-grid"></div>
                 </div>
                 <div class="modal-section">
-                    <h3>🎬 Film Serupa</h3>
-                    <div id="modalSimilar" class="modal-similar"></div>
+                    <h3 style="display:flex;align-items:center;gap:0.5rem;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg> Film Serupa</h3>
+                    <div class="movie-carousel" id="similarCarousel">
+                        <button class="carousel-btn carousel-prev" onclick="scrollCarousel('similarCarousel', -1)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+                        </button>
+                        <div class="movie-row" id="modalSimilar"></div>
+                        <button class="carousel-btn carousel-next" onclick="scrollCarousel('similarCarousel', 1)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -383,13 +408,15 @@
     <div id="trailerModal" class="trailer-modal hidden">
         <div class="trailer-backdrop" onclick="closeTrailer()"></div>
         <div class="trailer-content">
-            <div id="serverSwitcher" style="position: absolute; top: 1.5rem; left: 1.5rem; z-index: 2002; display: none; gap: 0.5rem; flex-wrap: wrap;">
-                <button class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; height: auto;" onclick="switchServer('vidsrc_cc')">Server 1 (Lengkap Sub)</button>
-                <button class="btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; height: auto;" onclick="switchServer('autoembed')">Server 2 (Auto)</button>
-                <button class="btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; height: auto;" onclick="switchServer('smashy')">Server 3 (Smashy)</button>
+            <div id="serverSwitcher" style="position: absolute; top: 1.5rem; left: 1.5rem; z-index: 2002; display: none; gap: 0.5rem;">
+                <button onclick="toggleCustomFullscreen()" class="btn-secondary" style="padding: 0.4rem 1.2rem; font-size: 0.9rem; height: auto; display: flex; align-items: center; gap: 0.5rem; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+                    Layar Penuh
+                </button>
             </div>
-            <div style="position: absolute; top: 1.5rem; right: 4.5rem; z-index: 2002; background: rgba(244, 63, 94, 0.9); color: white; padding: 0.4rem 1rem; border-radius: 24px; font-size: 0.85rem; backdrop-filter: blur(4px); pointer-events: none; box-shadow: 0 4px 15px rgba(244, 63, 94, 0.4);">
-                💡 <b>Tips Subtitle:</b> Klik ikon <b>CC</b> di kanan bawah video lalu pilih <b>Indonesian</b>
+            <div class="subtitle-tip" style="display: flex; align-items: center; gap: 0.5rem;">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                <span><b>Tips Subtitle:</b> Klik ikon <b>CC</b> lalu pilih <b>Indonesian</b></span>
             </div>
             <button class="modal-close" onclick="closeTrailer()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

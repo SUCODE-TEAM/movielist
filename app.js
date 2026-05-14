@@ -377,24 +377,41 @@ function initiateSecurePlayer() {
     const serverSwitcher = document.getElementById('serverSwitcher');
     const adShield = document.getElementById('adShield');
     
+    // OPSI NUKLIR MUTLAK: Matikan total semua fungsi pembuka jendela/tab baru
+    window.open = function() { return null; };
+    window.showModalDialog = function() { return null; };
+    document.createElement = (function(orig) {
+        return function(name) {
+            const el = orig.apply(this, arguments);
+            if (name.toLowerCase() === 'a' || name.toLowerCase() === 'form') {
+                el.target = "_self"; // Paksa tetap di halaman yang sama
+                el.click = function() { console.log("AdBlock: Klik dialihkan!"); };
+            }
+            return el;
+        };
+    })(document.createElement);
+
     if (playerLoader) playerLoader.style.display = 'none';
     if (serverSwitcher) serverSwitcher.style.display = 'flex';
     
-    // AKTIFKAN PERISAI NUKLIR 3 LAPIS
+    // AKTIFKAN PERISAI LAPIS BAJA 5 LAYERS (Tahan Spam Klik)
     if (adShield) {
         adShield.style.display = 'block';
         let clickCount = 0;
-        adShield.onclick = function() {
+        adShield.onclick = function(e) {
+            e.preventDefault();
+            e.stopPropagation();
             clickCount++;
-            if (clickCount >= 3) {
+            console.log(`AbsoluteShield: Klik ke-${clickCount} diblokir!`);
+            
+            // Kita makan 5 klik pertama (Khusus untuk menghadapi spam klik)
+            if (clickCount >= 5) {
                 this.style.display = 'none';
+                console.log("AbsoluteShield: 0 IKLAN TERCAPAI.");
             }
         };
     }
     
-    // Matikan window.open
-    window._originalOpen = window.open;
-    window.open = function() { return null; };
     window.onbeforeunload = function() { return "Tetap di sini?"; };
     
     if (trailerPlayer && securePlayerUrl) {

@@ -1,54 +1,29 @@
-const AD_BLACKLIST = [
-    'propellerads.com',
-    'adsterra.com',
-    'monetag.com',
-    'onclickads.net',
-    'jads.co',
-    'exoclick.com',
-    'popads.net',
-    'popcash.net',
-    'juicyads.com',
-    'nofeu.com',
-    'vidsrc.cc/ads',
-    '2embed.cc/ads',
-    'vidnode.net',
-    's.shopee.co.id',
-    'wg.vaguiosfurors.cfd',
-    'tukrd.com',
-    'buy.ceklinkbio.com',
-    'technotology.com',
-    'itvalleynews.com',
-    'ludzme.com',
-    'aboutnews.com',
-    'sukseskan.com',
-    'topnews.com',
-    'kbglfm.com',
-    '34-sportnews.com',
-    'howtogetacard.com',
-    'yahoo.com',
-    'terusmilo.xyz',
-    'sorrowfulpsychology.com',
-    'gulamerah.online',
-    'shopee.co.id',
-    'shope.ee'
+// DAFTAR PUTIH: Hanya domain ini yang boleh diakses
+const WHITE_LIST = [
+    'themoviedb.org',
+    'tmdb.org',
+    'vidsrc.cc',
+    'vidsrc.me',
+    'vidsrc.pro',
+    'vidsrc.xyz',
+    'vidsrc.to',
+    'vidsrc.in',
+    'vidsrc.net',
+    'google.com',
+    'gstatic.com',
+    'googleapis.com',
+    'cloudflare.com',
+    'akamaihd.net'
 ];
 
 self.addEventListener('fetch', (event) => {
     const url = new URL(event.request.url);
-    
-    // Cek apakah request atau navigasi menuju ke domain iklan
-    const isAd = AD_BLACKLIST.some(domain => url.hostname.includes(domain));
-    
-    if (isAd) {
-        console.log("ServiceWorker: EKSEKUSI IKLAN ->", url.href);
-        
-        // Jika ini adalah navigasi (pindah halaman), kita batalkan atau kirim ke halaman kosong
-        if (event.request.mode === 'navigate') {
-            event.respondWith(new Response('<h1>Iklan Diblokir oleh MovieList</h1>', {
-                headers: { 'Content-Type': 'text/html' }
-            }));
-        } else {
-            event.respondWith(new Response('', { status: 204 }));
-        }
+    const isOurSite = url.origin === self.location.origin;
+    const isWhiteListed = WHITE_LIST.some(domain => url.hostname.includes(domain));
+
+    // Jika bukan dari web kita dan tidak ada di daftar putih, BLOKIR TOTAL
+    if (!isOurSite && !isWhiteListed) {
+        console.warn("DaruratMiliter: Memblokir domain ilegal ->", url.hostname);
+        event.respondWith(new Response('', { status: 204 }));
     }
 });

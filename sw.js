@@ -28,17 +28,27 @@ const AD_BLACKLIST = [
     'yahoo.com',
     'terusmilo.xyz',
     'sorrowfulpsychology.com',
-    'gulamerah.online'
+    'gulamerah.online',
+    'shopee.co.id',
+    'shope.ee'
 ];
 
 self.addEventListener('fetch', (event) => {
-    const url = event.request.url;
+    const url = new URL(event.request.url);
     
-    // Cek apakah request menuju ke domain iklan
-    const isAd = AD_BLACKLIST.some(domain => url.includes(domain));
+    // Cek apakah request atau navigasi menuju ke domain iklan
+    const isAd = AD_BLACKLIST.some(domain => url.hostname.includes(domain));
     
     if (isAd) {
-        console.log("ServiceWorker: Iklan diblokir ->", url);
-        event.respondWith(new Response('', { status: 204 })); // Kirim respon kosong
+        console.log("ServiceWorker: EKSEKUSI IKLAN ->", url.href);
+        
+        // Jika ini adalah navigasi (pindah halaman), kita batalkan atau kirim ke halaman kosong
+        if (event.request.mode === 'navigate') {
+            event.respondWith(new Response('<h1>Iklan Diblokir oleh MovieList</h1>', {
+                headers: { 'Content-Type': 'text/html' }
+            }));
+        } else {
+            event.respondWith(new Response('', { status: 204 }));
+        }
     }
 });

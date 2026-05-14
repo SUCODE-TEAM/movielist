@@ -27,27 +27,18 @@
             window.alert = function() { return true; };
             window.confirm = function() { return true; };
 
-            // 2. Gembok Iframe (Sandbox Otomatis)
-            const originalSetAttribute = HTMLIFrameElement.prototype.setAttribute;
-            HTMLIFrameElement.prototype.setAttribute = function(name, value) {
-                if (name === 'src' && (value.includes('vidsrc') || value.includes('embed') || value.includes('player'))) {
-                    originalSetAttribute.call(this, 'sandbox', 'allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-presentation allow-same-origin allow-scripts allow-top-navigation allow-top-navigation-by-user-activation');
-                }
-                return originalSetAttribute.apply(this, arguments);
-            };
-
-            // 3. Mobile Touch Protector
+            // 2. Mobile Touch Protector
             const killAds = (e) => {
                 if (window.isWatchingFilm && e.target.tagName !== 'VIDEO' && e.target.tagName !== 'BUTTON' && !e.target.closest('.plyr')) {
                     const zIndex = window.getComputedStyle(e.target).zIndex;
                     if (zIndex > 100 || zIndex === 'auto') {
                         // Jangan biarkan klik tembus ke iklan transparan
-                        // e.preventDefault(); 
                     }
                 }
             };
             document.addEventListener('touchstart', killAds, { passive: true });
             document.addEventListener('click', killAds, true);
+
 
             // 4. Deteksi & Musnahkan Overlay Iklan Transparan (Loop Cepat)
             setInterval(() => {

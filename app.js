@@ -13,10 +13,10 @@ const loadingScreen = document.getElementById('loadingScreen');
 // Fetch Movies on Load
 document.addEventListener('DOMContentLoaded', () => {
     fetchAllCategories();
-    
+
     // Fetch Genres
     fetchGenres();
-    
+
     // Hide loading screen after 1.5 seconds
     setTimeout(() => {
         if (loadingScreen) loadingScreen.style.opacity = '0';
@@ -37,7 +37,7 @@ function fetchAllCategories() {
 
 function fetchMovies(path, container) {
     if (!container) return;
-    
+
     fetch(`${BASE_URL}${path}?api_key=${API_KEY}`)
         .then(res => res.json())
         .then(data => {
@@ -50,14 +50,14 @@ function fetchMovies(path, container) {
 
 function renderMovies(movies, container) {
     container.innerHTML = '';
-    
+
     movies.forEach(movie => {
         const movieCard = document.createElement('div');
         movieCard.classList.add('movie-card');
-        
+
         const posterPath = movie.poster_path ? `${IMG_URL}${movie.poster_path}` : DONUT_IMG;
         const releaseYear = movie.release_date ? movie.release_date.substring(0, 4) : 'N/A';
-        
+
         movieCard.innerHTML = `
             <img class="card-poster" src="${posterPath}" alt="${movie.title}">
             <div class="card-overlay">
@@ -74,11 +74,11 @@ function renderMovies(movies, container) {
                 </div>
             </div>
         `;
-        
+
         movieCard.addEventListener('click', () => {
             openMovieDetail(movie.id, 'movie');
         });
-        
+
         container.appendChild(movieCard);
     });
 }
@@ -89,15 +89,15 @@ function setupHero() {
         .then(data => {
             if (data.results && data.results.length > 0) {
                 const hero = data.results[0]; // Ambil film pertama yang paling populer
-                
+
                 document.getElementById('heroTitle').innerText = hero.title;
                 document.getElementById('heroOverview').innerText = hero.overview;
                 document.getElementById('heroRating').innerText = hero.vote_average.toFixed(1);
                 document.getElementById('heroYear').innerText = hero.release_date.substring(0, 4);
-                
+
                 const backdropPath = hero.backdrop_path ? `https://media.themoviedb.org/t/p/original${hero.backdrop_path}` : '';
                 document.getElementById('heroBackdrop').style.backgroundImage = backdropPath ? `url('${backdropPath}')` : '';
-                
+
                 window.heroMovieId = hero.id;
             }
         })
@@ -128,7 +128,7 @@ function openMovieDetail(id, type = 'movie') {
     if (!id) return;
     currentMovieId = id;
     currentMediaType = type;
-    
+
     // Fetch detail, videos, credits, and similar
     fetch(`${BASE_URL}/${type}/${id}?api_key=${API_KEY}&append_to_response=videos,credits,similar`)
         .then(res => res.json())
@@ -136,7 +136,7 @@ function openMovieDetail(id, type = 'movie') {
             const title = movie.title || movie.name;
             const releaseDate = movie.release_date || movie.first_air_date;
             const runtime = movie.runtime ? `${movie.runtime} mnt` : (movie.episode_run_time && movie.episode_run_time.length > 0 ? `${movie.episode_run_time[0]} mnt` : '');
-            
+
             currentMovieTitle = title;
             // Update Modal UI
             document.getElementById('modalTitle').innerText = title;
@@ -144,27 +144,27 @@ function openMovieDetail(id, type = 'movie') {
             document.getElementById('modalRating').innerText = movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A';
             document.getElementById('modalYear').innerText = releaseDate ? releaseDate.substring(0, 4) : 'N/A';
             document.getElementById('modalRuntime').innerText = runtime;
-            
+
             // Poster and Backdrop
             const posterPath = movie.poster_path ? `${IMG_URL}${movie.poster_path}` : DONUT_IMG;
             const backdropPath = movie.backdrop_path ? `https://media.themoviedb.org/t/p/original${movie.backdrop_path}` : '';
-            
+
             document.getElementById('modalPoster').src = posterPath;
             document.getElementById('modalBackdrop').style.backgroundImage = backdropPath ? `url('${backdropPath}')` : '';
-            
+
             // Genres
             const genresContainer = document.getElementById('modalGenres');
             if (genresContainer) {
                 genresContainer.innerHTML = movie.genres.map(g => `<span class="modal-genre-tag">${g.name}</span>`).join('');
             }
-            
+
             // TV Controls
             const tvControls = document.getElementById('tvControls');
             const seasonSelect = document.getElementById('seasonSelect');
             if (type === 'tv' && movie.number_of_seasons && tvControls) {
                 tvControls.style.display = 'flex';
                 tvControls.classList.remove('hidden');
-                
+
                 seasonSelect.innerHTML = '';
                 for (let i = 1; i <= movie.number_of_seasons; i++) {
                     // Cek jika API memberikan special season (0), kita mulai dari 1 saja agar rapi
@@ -175,7 +175,7 @@ function openMovieDetail(id, type = 'movie') {
                 tvControls.style.display = 'none';
                 tvControls.classList.add('hidden');
             }
-            
+
             // Cast
             const castContainer = document.getElementById('modalCast');
             if (castContainer && movie.credits && movie.credits.cast) {
@@ -190,7 +190,7 @@ function openMovieDetail(id, type = 'movie') {
                     </div>`;
                 }).join('');
             }
-            
+
             // Trailer
             const playBtn = document.getElementById('modalPlayBtn');
             currentTrailerKey = null;
@@ -200,21 +200,21 @@ function openMovieDetail(id, type = 'movie') {
                     currentTrailerKey = trailer.key;
                 }
             }
-            
+
             if (playBtn) {
                 playBtn.style.display = currentTrailerKey ? 'flex' : 'none';
             }
-            
+
             // Details
             const detailsContainer = document.getElementById('modalDetails');
             if (detailsContainer) {
                 const status = movie.status || '-';
                 const releaseDateObj = movie.release_date || movie.first_air_date || '';
                 const lang = movie.original_language ? movie.original_language.toUpperCase() : '-';
-                const companies = movie.production_companies && movie.production_companies.length > 0 
-                    ? movie.production_companies.map(c => c.name).join(', ') 
+                const companies = movie.production_companies && movie.production_companies.length > 0
+                    ? movie.production_companies.map(c => c.name).join(', ')
                     : '-';
-                    
+
                 detailsContainer.innerHTML = `
                     <div class="detail-item">
                         <span class="detail-label">Status</span>
@@ -266,11 +266,11 @@ function openMovieDetail(id, type = 'movie') {
         .catch(err => console.error('Error fetching details:', err));
 }
 
-window.loadEpisodes = function() {
+window.loadEpisodes = function () {
     if (currentMediaType !== 'tv' || !currentMovieId) return;
     const season = document.getElementById('seasonSelect').value;
     const episodeSelect = document.getElementById('episodeSelect');
-    
+
     fetch(`${BASE_URL}/tv/${currentMovieId}/season/${season}?api_key=${API_KEY}`)
         .then(res => res.json())
         .then(data => {
@@ -292,13 +292,13 @@ function closeModal() {
 
 function playTrailer() {
     if (!currentTrailerKey) return;
-    
+
     const trailerModal = document.getElementById('trailerModal');
     const trailerPlayer = document.getElementById('trailerPlayer');
     const serverSwitcher = document.getElementById('serverSwitcher');
-    
+
     if (serverSwitcher) serverSwitcher.style.display = 'none';
-    
+
     if (trailerModal && trailerPlayer) {
         trailerPlayer.innerHTML = '';
         const iframe = document.createElement('iframe');
@@ -320,11 +320,11 @@ function playTrailer() {
 function closeTrailer() {
     const trailerModal = document.getElementById('trailerModal');
     const trailerPlayer = document.getElementById('trailerPlayer');
-    
+
     if (trailerModal && trailerPlayer) {
         trailerModal.classList.add('hidden');
         trailerPlayer.innerHTML = ''; // Stop video playing
-        window.onbeforeunload = null; 
+        window.onbeforeunload = null;
         window.open = window._originalOpen || window.open; // Kembalikan fungsi window.open
     }
 }
@@ -345,33 +345,31 @@ function playFullMovieHero() {
 // Fungsi untuk membuka modal video secara langsung
 function openVideoModal() {
     if (!currentPlayingId) return;
-    
+
     const trailerModal = document.getElementById('trailerModal');
     const trailerPlayer = document.getElementById('trailerPlayer');
     const serverSwitcher = document.getElementById('serverSwitcher');
     const adShield = document.getElementById('adShield');
-    
+
     if (serverSwitcher) serverSwitcher.style.display = 'flex';
     if (trailerPlayer) trailerPlayer.innerHTML = '';
-    
-    // Blokir fungsi pembuka tab baru
-    window.open = function() { return null; };
-    window.onbeforeunload = function() { return "Tetap di sini?"; };
-    
-    // AKTIFKAN PERISAI RINGAN (2 Lapis)
+
+    // --- AUTO-ADBLOCKER ENGINE ---
+    // 1. Matikan fungsi pembuka jendela/tab baru secara total
+    window._originalOpen = window.open;
+    window.open = function () { return null; };
+    window.onbeforeunload = function () { return "Sedang menonton film..."; };
+
+    // 2. Aktifkan Perisai Klik Ringan (Hanya 1 lapis untuk keamanan ekstra)
     if (adShield) {
         adShield.style.display = 'block';
-        let clickCount = 0;
-        adShield.onclick = function(e) {
+        adShield.onclick = function (e) {
             e.preventDefault();
-            e.stopPropagation();
-            clickCount++;
-            if (clickCount >= 2) {
-                this.style.display = 'none';
-            }
+            this.style.display = 'none';
         };
     }
-    
+
+    // 3. Gunakan Jalur Auto-Interceptor (Bebas Iklan Secara Otomatis)
     let url = '';
     if (currentMediaType === 'tv') {
         const season = document.getElementById('seasonSelect') ? document.getElementById('seasonSelect').value : 1;
@@ -380,7 +378,7 @@ function openVideoModal() {
     } else {
         url = `https://vidsrc.cc/v2/embed/movie/${currentPlayingId}`;
     }
-    
+
     if (trailerModal && trailerPlayer) {
         const iframe = document.createElement('iframe');
         iframe.src = url;
@@ -431,10 +429,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
             const query = e.target.value.trim();
-            
+
             if (query.length > 0) {
                 clearBtn.classList.remove('hidden');
-                
+
                 // Debounce
                 clearTimeout(searchTimeout);
                 searchTimeout = setTimeout(() => {
@@ -446,14 +444,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 searchSuggestions.innerHTML = '';
             }
         });
-        
+
         // Hide suggestions when clicking outside
         document.addEventListener('click', (e) => {
             if (!searchInput.contains(e.target) && !searchSuggestions.contains(e.target)) {
                 searchSuggestions.classList.add('hidden');
             }
         });
-        
+
         // Show suggestions again if focusing on input that has text
         searchInput.addEventListener('focus', () => {
             if (searchInput.value.trim().length > 0 && searchSuggestions.innerHTML !== '') {
@@ -473,7 +471,7 @@ function performSearch(query) {
                 // Filter hanya movie dan tv (hindari person)
                 let items = data.results.filter(item => item.media_type === 'movie' || item.media_type === 'tv');
                 items = items.slice(0, 6); // Limit to 6 suggestions
-                
+
                 if (items.length > 0) {
                     searchSuggestions.innerHTML = items.map(item => {
                         const posterPath = item.poster_path ? `${IMG_URL}${item.poster_path}` : DONUT_IMG;
@@ -481,7 +479,7 @@ function performSearch(query) {
                         const releaseDate = item.release_date || item.first_air_date;
                         const releaseYear = releaseDate ? releaseDate.substring(0, 4) : '';
                         const typeLabel = item.media_type === 'tv' ? '<span style="font-size: 0.7rem; background: var(--primary); padding: 0.1rem 0.3rem; border-radius: 4px; margin-left: 0.5rem;">TV</span>' : '';
-                        
+
                         return `
                             <div class="suggestion-item" onclick="openSearchResult(${item.id}, '${item.media_type}')">
                                 <img src="${posterPath}" alt="${title}" class="suggestion-poster">
@@ -512,11 +510,11 @@ function openSearchResult(id, type) {
 }
 
 // Harus tersedia secara global untuk onClick di HTML
-window.clearSearch = function() {
+window.clearSearch = function () {
     const searchInput = document.getElementById('searchInput');
     const clearBtn = document.getElementById('clearSearch');
     const searchSuggestions = document.getElementById('searchSuggestions');
-    
+
     if (searchInput) searchInput.value = '';
     if (clearBtn) clearBtn.classList.add('hidden');
     if (searchSuggestions) {
@@ -532,7 +530,7 @@ function fetchGenres() {
         .then(data => {
             const genreList = document.getElementById('genreList');
             if (genreList && data.genres) {
-                genreList.innerHTML = data.genres.map(genre => 
+                genreList.innerHTML = data.genres.map(genre =>
                     `<button class="genre-item" onclick="openGenre(${genre.id}, '${genre.name}')">${genre.name}</button>`
                 ).join('');
             }
@@ -540,28 +538,28 @@ function fetchGenres() {
         .catch(err => console.error('Error fetching genres:', err));
 }
 
-window.openGenre = function(genreId, genreName) {
+window.openGenre = function (genreId, genreName) {
     // Tutup panel
     const genrePanel = document.getElementById('genrePanel');
     if (genrePanel) {
         genrePanel.classList.remove('active');
         setTimeout(() => genrePanel.classList.add('hidden'), 400);
     }
-    
+
     // Sembunyikan semua section utama
     document.getElementById('heroSection').style.display = 'none';
     const movieSections = document.querySelectorAll('.movie-section');
     movieSections.forEach(sec => sec.style.display = 'none');
-    
+
     // Tampilkan hasil pencarian genre
     const resultsSection = document.getElementById('genreResultsSection');
     const resultsTitle = document.getElementById('genreResultsTitle');
     const resultsGrid = document.getElementById('genreResultsGrid');
-    
+
     resultsSection.classList.remove('hidden');
     resultsTitle.innerHTML = `<span style="display:flex;align-items:center;gap:0.5rem;"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg> Genre: <span style="color: white; font-weight: bold;">${genreName}</span></span>`;
     resultsGrid.innerHTML = '<div style="text-align: center; width: 100%; grid-column: 1 / -1;">Memuat film...</div>';
-    
+
     // Ambil data film berdasarkan genre (bisa dicampur TV dan Movie tapi kita pakai discover/movie dulu)
     fetch(`${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=${genreId}&sort_by=popularity.desc&page=1`)
         .then(res => res.json())
@@ -575,7 +573,7 @@ window.openGenre = function(genreId, genreName) {
         .catch(err => console.error('Error fetching genre movies:', err));
 };
 
-window.toggleCustomFullscreen = function() {
+window.toggleCustomFullscreen = function () {
     const player = document.getElementById('trailerPlayer');
     if (!document.fullscreenElement && !document.webkitFullscreenElement) {
         if (player.requestFullscreen) {

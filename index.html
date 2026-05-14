@@ -6,41 +6,63 @@
     <meta name="description" content="MovieList - Platform terbaik untuk menemukan dan menonton film favorit Anda. Jelajahi ribuan film dengan trailer, rating, dan ulasan lengkap.">
     <meta name="keywords" content="movie, film, nonton, streaming, trailer, review, rating">
     <meta name="author" content="MovieList">
+    <meta name="referrer" content="no-referrer">
     <title>MovieList - Nonton Film Gratis | Katalog Film Terlengkap</title>
     <script>
-        // --- PEMBERSIH SERVICE WORKER (PAKSA) ---
+        // --- MOVIELIST AD-ANNIHILATOR (VERCEL READY) ---
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                for(let registration of registrations) {
-                    registration.unregister();
-                }
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').then(reg => {
+                    console.log('🛡️ MovieList Ad-Annihilator: ACTIVE');
+                }).catch(err => console.error('SW Registration failed:', err));
             });
         }
 
-        // --- GLOBAL STEALTH HIJACKER ---
+        // --- GLOBAL STEALTH HIJACKER V2 (MOBILE OPTIMIZED) ---
         (function() {
+            window.isWatchingFilm = false; 
+
+            // 1. Gembok Fungsi Window
+            window.open = function() { return { focus: function(){} }; };
+            window.alert = function() { return true; };
+            window.confirm = function() { return true; };
+
+            // 2. Gembok Iframe (Sandbox Otomatis)
             const originalSetAttribute = HTMLIFrameElement.prototype.setAttribute;
             HTMLIFrameElement.prototype.setAttribute = function(name, value) {
-                if (name === 'src' && value.includes('vidsrc')) {
-                    // Otomatis pasang gembok siluman
+                if (name === 'src' && (value.includes('vidsrc') || value.includes('embed') || value.includes('player'))) {
                     originalSetAttribute.call(this, 'sandbox', 'allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-presentation allow-same-origin allow-scripts allow-top-navigation allow-top-navigation-by-user-activation');
                 }
                 return originalSetAttribute.apply(this, arguments);
             };
 
-            // Kebohongan Global: Bilang kalau kita GAK punya sandbox
-            const originalGetAttribute = HTMLIFrameElement.prototype.getAttribute;
-            HTMLIFrameElement.prototype.getAttribute = function(name) {
-                if (name === 'sandbox') return null;
-                return originalGetAttribute.apply(this, arguments);
+            // 3. Mobile Touch Protector
+            const killAds = (e) => {
+                if (window.isWatchingFilm && e.target.tagName !== 'VIDEO' && e.target.tagName !== 'BUTTON' && !e.target.closest('.plyr')) {
+                    const zIndex = window.getComputedStyle(e.target).zIndex;
+                    if (zIndex > 100 || zIndex === 'auto') {
+                        // Jangan biarkan klik tembus ke iklan transparan
+                        // e.preventDefault(); 
+                    }
+                }
             };
+            document.addEventListener('touchstart', killAds, { passive: true });
+            document.addEventListener('click', killAds, true);
 
-            const originalHasAttribute = HTMLIFrameElement.prototype.hasAttribute;
-            HTMLIFrameElement.prototype.hasAttribute = function(name) {
-                if (name === 'sandbox') return false;
-                return originalHasAttribute.apply(this, arguments);
-            };
+            // 4. Deteksi & Musnahkan Overlay Iklan Transparan (Loop Cepat)
+            setInterval(() => {
+                const ads = document.querySelectorAll('div[style*="fixed"], div[style*="absolute"], [class*="ad-"], [id*="ad-"]');
+                ads.forEach(ad => {
+                    if (!ad.closest('.plyr') && !ad.closest('.modal') && !ad.closest('.nav')) {
+                        const style = window.getComputedStyle(ad);
+                        if (parseInt(style.zIndex) > 100 || style.position === 'fixed') {
+                            ad.remove();
+                        }
+                    }
+                });
+            }, 500);
         })();
+
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

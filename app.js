@@ -359,13 +359,13 @@ function playFullMovieHero() {
     openVideoModal();
 }
 
-// Fungsi untuk membuka modal video secara langsung
-function openVideoModal() {
-    if (!currentPlayingId) return;
+// Movie Modal Logic
+function openVideoModal(tmdbId, type, title, season = 1, episode = 1) {
+    window.isWatchingFilm = true; // Aktifkan perlindungan iklan ketat
+    const modal = document.getElementById('videoModal');
+    const modalTitle = document.getElementById('modalMovieTitle');
+    const playerContainer = document.getElementById('trailerPlayer');
 
-    const trailerModal = document.getElementById('trailerModal');
-    const trailerPlayer = document.getElementById('trailerPlayer');
-    const serverSwitcher = document.getElementById('serverSwitcher');
     const adShield = document.getElementById('adShield');
 
     if (serverSwitcher) serverSwitcher.style.display = 'flex';
@@ -441,7 +441,11 @@ function initSultanPlayer(streamUrl) {
     const video = document.getElementById('sultan-player');
     
     if (Hls.isSupported()) {
-        const hls = new Hls();
+        const hls = new Hls({
+            xhrSetup: function(xhr, url) {
+                xhr.withCredentials = false; // Jangan kirim Cookies (Biar gak dicurigai)
+            }
+        });
         hls.loadSource(streamUrl);
         hls.attachMedia(video);
         window.hls = hls;

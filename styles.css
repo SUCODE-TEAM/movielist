@@ -1405,3 +1405,19 @@ button {
     .btn-primary, .btn-secondary { width: 100%; justify-content: center; }
     .movie-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 1rem; }
 }
+
+/* --- VIDEASY & PLAYER AD-KILLER --- */
+iframe[src*="videasy.net"] + div, 
+iframe[src*="videasy.net"] ~ div[style*="position: fixed"],
+iframe[src*="videasy.net"] ~ div[style*="position: absolute"],
+div[style*="z-index: 2147483647"], 
+div[style*="z-index: 9999999"],
+.videasy-ad-overlay {
+    display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+

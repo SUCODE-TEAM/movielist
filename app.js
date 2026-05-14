@@ -1,3 +1,12 @@
+// DAFTARKAN INTEL PENCEGAT IKLAN (Service Worker)
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+            .then(() => console.log("Intel Pencegat Iklan Aktif!"))
+            .catch(err => console.error("Intel Gagal Aktif:", err));
+    });
+}
+
 const API_KEY = 'c88c94f12fcd99e29851e05850e1950f';
 const BASE_URL = 'https://api.themoviedb.org/3';
 const IMG_URL = 'https://media.themoviedb.org/t/p/w500';
@@ -384,15 +393,19 @@ function openVideoModal() {
 
     if (trailerModal && trailerPlayer) {
         const iframe = document.createElement('iframe');
+        
+        // --- JURUS INTEL (TANPA SANDBOX) ---
+        // Kita hapus sandbox agar tidak terdeteksi, 
+        // tapi iklan tetap mati lewat sw.js (Service Worker).
+        
         iframe.src = url;
         iframe.frameBorder = '0';
         iframe.allowFullscreen = true;
-        // KOTAK STERIL (Sandbox): Izinkan script & video, tapi BLOKIR Popup & Redirect
-        iframe.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin allow-presentation');
         iframe.setAttribute('allow', 'autoplay; encrypted-media; fullscreen; picture-in-picture');
         iframe.style.width = '100%';
         iframe.style.height = '100%';
         iframe.style.border = 'none';
+        
         trailerPlayer.appendChild(iframe);
         trailerModal.classList.remove('hidden');
     }

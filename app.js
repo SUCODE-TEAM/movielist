@@ -478,12 +478,8 @@ function initFallbackIframe(url) {
     const iframe = document.createElement('iframe');
     iframe.src = url;
     iframe.frameBorder = '0';
-    
-    // --- GEMBOK SANDBOX (MEMBUNUH IKLAN DI DEVICE ORANG LAIN) ---
-    // Kita larang 'allow-popups' dan 'allow-top-navigation' agar tidak bisa redirect iklan
-    iframe.setAttribute('sandbox', 'allow-forms allow-scripts allow-pointer-lock allow-same-origin allow-presentation');
-    
     iframe.setAttribute('allow', 'autoplay; encrypted-media; fullscreen; picture-in-picture');
+
     iframe.style.width = '100%';
     iframe.style.height = '100%';
     iframe.style.border = 'none';

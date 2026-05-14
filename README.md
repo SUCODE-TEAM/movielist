@@ -249,3 +249,21 @@ Aplikasi ini dibangun dengan **Laravel 13** dan mengikuti best practices Laravel
 ---
 
 **Happy Movie Watching! 🎬🍿**
+
+---
+
+## 🛡️ Fitur Anti-Iklan (AdBlocker)
+
+Project ini dilengkapi dengan sistem perlindungan iklan berlapis:
+1.  **Service Worker Ad-Killer**: Memblokir domain iklan di level jaringan secara otomatis.
+2.  **Navigation Guard**: Mencegah redirect paksa ke situs eksternal.
+3.  **Global Popup Destroyer**: Mematikan fungsi pembukaan tab baru secara paksa.
+
+### 🚀 Solusi VIP (Untuk Pengalaman 0 Iklan Mutlak)
+Jika Anda masih menemui iklan agresif dari server pihak ketiga (`vidsrc.cc`), gunakan "Kit Senjata Berat" yang tersedia di folder `/adblock`:
+
+*   **Tampermonkey**: Instal [Vidsrc Annihilator](./adblock/vidsrc_annihilator.user.js) untuk mematikan skrip iklan langsung dari dalam player.
+*   **uBlock Origin**: Impor daftar filter dari [uBlock Filters](./adblock/ublock_filters.txt) ke dalam dashboard uBlock Anda.
+
+---
+

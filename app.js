@@ -354,13 +354,17 @@ function openVideoModal() {
     if (serverSwitcher) serverSwitcher.style.display = 'flex';
     if (trailerPlayer) trailerPlayer.innerHTML = '';
 
-    // --- AUTO-ADBLOCKER ENGINE ---
-    // 1. Matikan fungsi pembuka jendela/tab baru secara total
+    // --- NATURAL ADBLOCKER ALAMI ---
+    // 1. Matikan fungsi popup total
     window._originalOpen = window.open;
     window.open = function () { return null; };
-    window.onbeforeunload = function () { return "Sedang menonton film..."; };
+    
+    // 2. Anti-Redirect Wall: Menahan agar tetap di halaman ini
+    window.onbeforeunload = function() {
+        return "Film sedang diputar. Jangan tinggalkan halaman ini agar tidak terkena redirect iklan!";
+    };
 
-    // 2. Aktifkan Perisai Klik Ringan (Hanya 1 lapis untuk keamanan ekstra)
+    // 3. Perisai Klik Siluman
     if (adShield) {
         adShield.style.display = 'block';
         adShield.onclick = function (e) {
@@ -369,7 +373,6 @@ function openVideoModal() {
         };
     }
 
-    // 3. Gunakan Jalur Auto-Interceptor (Bebas Iklan Secara Otomatis)
     let url = '';
     if (currentMediaType === 'tv') {
         const season = document.getElementById('seasonSelect') ? document.getElementById('seasonSelect').value : 1;
@@ -384,6 +387,8 @@ function openVideoModal() {
         iframe.src = url;
         iframe.frameBorder = '0';
         iframe.allowFullscreen = true;
+        // KOTAK STERIL (Sandbox): Izinkan script & video, tapi BLOKIR Popup & Redirect
+        iframe.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin allow-presentation');
         iframe.setAttribute('allow', 'autoplay; encrypted-media; fullscreen; picture-in-picture');
         iframe.style.width = '100%';
         iframe.style.height = '100%';

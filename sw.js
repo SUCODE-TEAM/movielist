@@ -11,7 +11,21 @@ const AD_BLACKLIST = [
     'nofeu.com',
     'vidsrc.cc/ads',
     '2embed.cc/ads',
-    'vidnode.net'
+    'vidnode.net',
+    's.shopee.co.id',
+    'wg.vaguiosfurors.cfd',
+    'tukrd.com',
+    'buy.ceklinkbio.com',
+    'technotology.com',
+    'itvalleynews.com',
+    'ludzme.com',
+    'aboutnews.com',
+    'sukseskan.com',
+    'topnews.com',
+    'kbglfm.com',
+    '34-sportnews.com',
+    'howtogetacard.com',
+    'yahoo.com'
 ];
 
 self.addEventListener('fetch', (event) => {

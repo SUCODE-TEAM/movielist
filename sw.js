@@ -25,7 +25,10 @@ const AD_BLACKLIST = [
     'kbglfm.com',
     '34-sportnews.com',
     'howtogetacard.com',
-    'yahoo.com'
+    'yahoo.com',
+    'terusmilo.xyz',
+    'sorrowfulpsychology.com',
+    'gulamerah.online'
 ];
 
 self.addEventListener('fetch', (event) => {

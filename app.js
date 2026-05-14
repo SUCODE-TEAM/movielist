@@ -324,7 +324,8 @@ function closeTrailer() {
     if (trailerModal && trailerPlayer) {
         trailerModal.classList.add('hidden');
         trailerPlayer.innerHTML = ''; // Stop video playing
-        window.onbeforeunload = null; // Matikan proteksi saat video ditutup
+        window.onbeforeunload = null; 
+        window.open = window._originalOpen || window.open; // Kembalikan fungsi window.open
     }
 }
 
@@ -351,27 +352,28 @@ function openVideoModal() {
     
     if (serverSwitcher) serverSwitcher.style.display = 'flex';
     
-    // AKTIFKAN PERISAI LAPIS BAJA GANDA
+    // OPSI NUKLIR: Matikan fungsi window.open agar tidak ada popup sama sekali
+    window._originalOpen = window.open;
+    window.open = function() { console.log("NuclearShield: Popup diblokir!"); return null; };
+    
+    // AKTIFKAN PERISAI LAPIS BAJA 3 LAYERS
     const adShield = document.getElementById('adShield');
     if (adShield) {
         adShield.style.display = 'block';
         let clickCount = 0;
         adShield.onclick = function() {
             clickCount++;
-            console.log(`AdShield: Klik ke-${clickCount} diblokir!`);
+            console.log(`NuclearShield: Klik ke-${clickCount} diblokir!`);
             
-            // Kita makan 2 klik pertama yang biasanya adalah jebakan iklan
-            if (clickCount >= 2) {
+            // Kita makan 3 klik pertama (Standard jebakan iklan)
+            if (clickCount >= 3) {
                 this.style.display = 'none';
-                console.log("AdShield: Perisai dibuka, selamat menonton!");
+                console.log("NuclearShield: Akses dibuka, selamat menikmati 0 iklan!");
             }
         };
     }
     
-    // PROTEKSI ANTI-REDIRECT (Mencegah web pindah ke situs judi)
-    window.onbeforeunload = function() {
-        return "Video sedang diputar. Tetap di sini untuk lanjut menonton?";
-    };
+    window.onbeforeunload = function() { return "Tetap di MovieList?"; };
     
     let url = '';
     if (currentMediaType === 'tv') {

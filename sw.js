@@ -7,7 +7,11 @@ const AD_BLACKLIST = [
     'exoclick.com',
     'popads.net',
     'popcash.net',
-    'juicyads.com'
+    'juicyads.com',
+    'nofeu.com',
+    'vidsrc.cc/ads',
+    '2embed.cc/ads',
+    'vidnode.net'
 ];
 
 self.addEventListener('fetch', (event) => {

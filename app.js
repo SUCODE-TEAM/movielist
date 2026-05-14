@@ -362,16 +362,18 @@ function playFullMovieHero() {
 }
 
 // Movie Modal Logic
-function openVideoModal(tmdbId, type, title, season = 1, episode = 1) {
-    window.isWatchingFilm = true; // Aktifkan perlindungan iklan ketat
-    const modal = document.getElementById('videoModal');
-    const modalTitle = document.getElementById('modalMovieTitle');
-    const playerContainer = document.getElementById('trailerPlayer');
+function openVideoModal() {
+    if (!currentPlayingId) return;
 
+    window.isWatchingFilm = true; 
+    const trailerModal = document.getElementById('trailerModal');
+    const trailerPlayer = document.getElementById('trailerPlayer');
+    const serverSwitcher = document.getElementById('serverSwitcher');
     const adShield = document.getElementById('adShield');
 
     if (serverSwitcher) serverSwitcher.style.display = 'flex';
     if (trailerPlayer) trailerPlayer.innerHTML = '';
+
 
     // --- GEMBOK ANTI-REDIRECT MUTLAK ---
     window.isWatchingFilm = true; // Flag untuk mengaktifkan gembok

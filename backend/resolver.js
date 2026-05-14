@@ -37,68 +37,68 @@ class VidsrcResolver {
     constructor() {
         this.client = axios.create({
             headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-                'Referer': 'https://vidsrc.cc',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
                 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
-                'Accept-Language': 'en-US,en;q=0.9'
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Cache-Control': 'no-cache',
+                'Pragma': 'no-cache'
             },
             timeout: 10000
         });
     }
 
     async resolve(tmdbId, type = 'movie', season, episode) {
-        try {
-            console.log(`[Resolver Sultan] Mencari Link untuk ${type} ID: ${tmdbId}`);
+        // Daftar provider untuk rotasi jika gagal
+        const providers = [
+            { name: 'vidsrc.cc', url: 'https://vidsrc.cc' },
+            { name: 'vidsrc.xyz', url: 'https://vidsrc.xyz' },
+            { name: 'vidsrc.pm', url: 'https://vidsrc.pm' }
+        ];
 
-            const embedPath = type === 'movie'
-                ? `/v2/embed/movie/${tmdbId}`
-                : `/v2/embed/tv/${tmdbId}/${season}/${episode}`;
+        for (const provider of providers) {
+            try {
+                console.log(`[Resolver] Mencoba provider: ${provider.name}`);
 
-            // 1. Ambil Halaman Embed
-            const response = await this.client.get(`https://vidsrc.cc${embedPath}`);
-            const html = response.data;
-            const $ = cheerio.load(html);
+                const embedPath = type === 'movie'
+                    ? `/v2/embed/movie/${tmdbId}`
+                    : `/v2/embed/tv/${tmdbId}/${season}/${episode}`;
 
-            // Cari data-id di berbagai kemungkinan tempat
-            let dataId = $('#player_iframe').attr('data-id') ||
-                $('div#player_iframe').attr('data-id') ||
-                $('div[data-id]').attr('data-id');
+                const response = await this.client.get(`${provider.url}${embedPath}`, {
+                    headers: { 'Referer': provider.url }
+                });
+                
+                const html = response.data;
+                const $ = cheerio.load(html);
 
-            if (!dataId) {
-                console.error(`[Resolver Error] Tidak menemukan data-id di HTML. vidsrc mungkin memblokir IP laptop Anda.`);
-                return null;
-            }
+                let dataId = $('#player_iframe').attr('data-id') || 
+                             $('div#player_iframe').attr('data-id') || 
+                             $('[data-id]').attr('data-id');
 
-            console.log(`[Resolver] Data-ID ditemukan: ${dataId}`);
+                if (!dataId) continue;
 
-            // 2. Ambil AJAX Link
-            const ajaxUrl = `https://vidsrc.cc/v2/ajax/embed/${dataId}`;
-            const { data: ajaxResponse } = await this.client.get(ajaxUrl, {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Referer': `https://vidsrc.cc${embedPath}`
+                const ajaxUrl = `${provider.url}/v2/ajax/embed/${dataId}`;
+                const { data: ajaxResponse } = await this.client.get(ajaxUrl, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Referer': `${provider.url}${embedPath}`
+                    }
+                });
+
+                if (ajaxResponse && ajaxResponse.url) {
+                    const finalUrl = decryptUrl(ajaxResponse.url);
+                    console.log(`[Resolver Success] Berhasil lewat ${provider.name}`);
+                    return { url: finalUrl, quality: 'auto', type: 'hls', provider: provider.name };
                 }
-            });
-
-            if (!ajaxResponse || !ajaxResponse.url) {
-                console.error(`[Resolver Error] AJAX tidak memberikan URL.`);
-                return null;
+            } catch (err) {
+                console.warn(`[Resolver Warning] Provider ${provider.name} gagal: ${err.message}`);
             }
-
-            const finalUrl = decryptUrl(ajaxResponse.url);
-            console.log(`[Resolver Success] URL Terpecahkan!`);
-
-            return {
-                url: finalUrl,
-                quality: 'auto',
-                type: 'hls'
-            };
-        } catch (error) {
-            console.error(`[Resolver Error]:`, error.message);
-            return null;
         }
+        
+        console.error(`[Resolver Error] Semua provider gagal.`);
+        return null;
     }
 }
 
 module.exports = { VidsrcResolver };
+
 

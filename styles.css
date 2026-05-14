@@ -539,15 +539,17 @@ button {
     transition: var(--transition);
 }
 .btn-primary {
-    background: var(--primary);
-    color: white;
-    box-shadow: 0 4px 14px rgba(229, 9, 20, 0.3);
+    background: #ffffff; /* Putih Bersih */
+    color: #000000; /* Hitam Pekat */
+    font-weight: 700;
 }
 .btn-primary:hover {
-    background: var(--primary-hover);
+    background: #e5e5e5;
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(229, 9, 20, 0.4);
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
 }
+
+
 .btn-primary svg {
     width: 1.25rem;
     height: 1.25rem;
@@ -1233,6 +1235,29 @@ button {
     align-items: center;
     justify-content: center;
 }
+.sultan-fullscreen-btn {
+    position: absolute !important;
+    top: 0.8rem !important;
+    left: 0.8rem !important;
+    z-index: 5000 !important;
+    display: flex !important;
+}
+.sultan-fullscreen-btn button {
+    padding: 0.6rem 1.2rem !important;
+    font-size: 0.85rem !important;
+    background: #000000 !important; /* Hitam Pekat */
+    color: #ffffff !important; /* Teks Putih */
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    border-radius: 8px !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5) !important;
+}
+
+
+
+
+
+
 .trailer-backdrop {
     position: absolute;
     top: 0;
@@ -1359,7 +1384,7 @@ button {
 .footer-bottom a { color: var(--primary); font-weight: 500; }
 .footer-disclaimer { margin-top: 0.5rem; font-size: 0.8rem; opacity: 0.7; }
 
-/* Responsive Design */
+/* Responsive Design & Mobile Optimization */
 @media (max-width: 1024px) {
     .modal-hero { padding: 2rem; }
     .modal-hero-content { flex-direction: column; gap: 2rem; }
@@ -1372,39 +1397,97 @@ button {
 @media (max-width: 768px) {
     .logo-text { font-size: 1.2rem; }
     .nav-btn svg { width: 1.25rem; height: 1.25rem; }
-    .nav-container {
-        padding: 0 1rem;
-        gap: 0.5rem;
-    }
-    .nav-search {
-        display: block !important;
-        flex: 1;
-        margin: 0;
-    }
-    .nav-search .search-input {
-        padding: 0.5rem 1rem 0.5rem 2.5rem;
-        font-size: 0.9rem;
-    }
-    .search-icon {
-        left: 0.75rem;
-    }
+    .nav-container { padding: 0 1rem; gap: 0.5rem; }
+    .nav-search { display: block !important; flex: 1; margin: 0; }
+    .nav-search .search-input { padding: 0.5rem 1rem 0.5rem 2.5rem; font-size: 0.9rem; }
+    .search-icon { left: 0.75rem; }
     .nav-mobile-toggle { display: none !important; }
-    .hero-title { font-size: 2.5rem; }
-    .hero-content { text-align: center; }
+    .hero-title { font-size: 2.2rem; }
+    .hero-overview { font-size: 0.95rem; -webkit-line-clamp: 4; }
+    .hero-content { text-align: center; padding: 2rem 1rem; }
     .hero-meta { justify-content: center; }
-    .hero-actions { justify-content: center; }
-    .movie-card { flex: 0 0 160px; }
-    .category-header { flex-direction: column; align-items: flex-start; }
-    .modal-body { padding: 1.5rem; }
+    .hero-actions { justify-content: center; flex-direction: column; width: 100%; }
+    .hero-actions button { width: 100%; justify-content: center; }
+    .movie-card { flex: 0 0 150px; height: 230px; }
+    .category-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+    .modal-body { padding: 1.25rem; }
     .subtitle-tip { display: none; }
-    #serverSwitcher { display: none !important; }
+    #serverSwitcher { display: flex !important; }
 }
 
+
+/* Android Specific Optimization */
 @media (max-width: 480px) {
-    .movie-card { flex: 0 0 140px; }
-    .btn-primary, .btn-secondary { width: 100%; justify-content: center; }
-    .movie-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 1rem; }
+    body { font-size: 14px; }
+    .hero-title { font-size: 1.8rem; line-height: 1.2; }
+    .hero-overview { -webkit-line-clamp: 3; }
+    
+    .movie-grid { 
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); 
+        gap: 0.75rem; 
+        padding: 0 0.5rem;
+    }
+    
+    .movie-card { 
+        flex: 0 0 130px; 
+        height: 200px; 
+        border-radius: var(--radius-sm);
+    }
+    
+    .card-title { font-size: 0.8rem; }
+    
+    /* Full width player on mobile - FIX GEPENG */
+    .trailer-content {
+        width: 100% !important;
+        height: auto !important;
+        max-height: 100vh !important;
+        border-radius: 0 !important;
+        aspect-ratio: 16/9 !important;
+    }
+    
+    /* SI MERAH-MERAH KECIL & DI POJOK KIRI BAWAH */
+    .subtitle-tip {
+        display: flex !important;
+        align-items: center !important;
+        gap: 0.4rem !important;
+        position: absolute !important;
+        top: auto !important;
+        bottom: 0.8rem !important;
+        left: 0.8rem !important;
+        right: auto !important;
+        background: rgba(244, 63, 94, 0.85) !important;
+        color: white !important;
+        font-size: 10px !important;
+        padding: 4px 12px !important;
+        border-radius: 20px !important;
+        z-index: 2100 !important;
+        width: auto !important;
+        white-space: nowrap !important;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+
+    /* TOMBOL CLOSE (X) GEDE & MANTAP */
+    .trailer-content .modal-close {
+        top: 0.5rem !important;
+        right: 0.5rem !important;
+        width: 3.2rem !important; /* Gede biar gampang dipencet */
+        height: 3.2rem !important;
+        background: rgba(0, 0, 0, 0.7) !important;
+        border: 2px solid rgba(255, 255, 255, 0.4) !important;
+        z-index: 99999 !important; /* Selalu di depan */
+        display: flex !important;
+        border-radius: 50% !important;
+    }
+    .trailer-content .modal-close svg {
+        width: 1.5rem !important;
+        height: 1.5rem !important;
+    }
+
+
+
+
 }
+
 
 /* --- VIDEASY & PLAYER AD-KILLER --- */
 iframe[src*="videasy.net"] + div, 

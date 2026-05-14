@@ -312,7 +312,8 @@ function playTrailer() {
         const iframe = document.createElement('iframe');
         iframe.src = `https://www.youtube.com/embed/${currentTrailerKey}?autoplay=1`;
         iframe.frameBorder = '0';
-        iframe.allowFullscreen = true;
+        iframe.allow = "autoplay; fullscreen; picture-in-picture";
+
         iframe.setAttribute('allow', 'autoplay; encrypted-media; fullscreen; picture-in-picture');
         iframe.setAttribute('allowfullscreen', 'true');
         iframe.setAttribute('webkitallowfullscreen', 'true');
@@ -371,8 +372,15 @@ function openVideoModal() {
     const serverSwitcher = document.getElementById('serverSwitcher');
     const adShield = document.getElementById('adShield');
 
-    if (serverSwitcher) serverSwitcher.style.display = 'flex';
+    if (serverSwitcher) {
+        console.log('🛡️ Menampilkan Tombol Fullscreen...');
+        serverSwitcher.style.setProperty('display', 'flex', 'important');
+        serverSwitcher.style.setProperty('z-index', '2500', 'important');
+        serverSwitcher.style.setProperty('visibility', 'visible', 'important');
+        serverSwitcher.style.setProperty('opacity', '1', 'important');
+    }
     if (trailerPlayer) trailerPlayer.innerHTML = '';
+
 
 
     // --- GEMBOK ANTI-REDIRECT MUTLAK ---
@@ -409,8 +417,9 @@ function openVideoModal() {
     }
 
     if (trailerModal && trailerPlayer) {
-        trailerPlayer.innerHTML = '<div class="loading-sultan">Mengambil Link Video Bening...</div>';
+        trailerPlayer.innerHTML = ''; // Hapus teks loading
         trailerModal.classList.remove('hidden');
+
 
         // --- STRATEGI FINAL BOSS (DENGAN TIMEOUT 2 DETIK) ---
         const season = document.getElementById('seasonSelect') ? document.getElementById('seasonSelect').value : 1;
@@ -463,13 +472,17 @@ function initSultanPlayer(streamUrl) {
     });
 }
 
-// FUNGSI CADANGAN (Iframe Stealth)
+// FUNGSI CADANGAN (Iframe Stealth - ANTI POPUP)
 function initFallbackIframe(url) {
     const trailerPlayer = document.getElementById('trailerPlayer');
     const iframe = document.createElement('iframe');
     iframe.src = url;
     iframe.frameBorder = '0';
-    iframe.allowFullscreen = true;
+    
+    // --- GEMBOK SANDBOX (MEMBUNUH IKLAN DI DEVICE ORANG LAIN) ---
+    // Kita larang 'allow-popups' dan 'allow-top-navigation' agar tidak bisa redirect iklan
+    iframe.setAttribute('sandbox', 'allow-forms allow-scripts allow-pointer-lock allow-same-origin allow-presentation');
+    
     iframe.setAttribute('allow', 'autoplay; encrypted-media; fullscreen; picture-in-picture');
     iframe.style.width = '100%';
     iframe.style.height = '100%';
@@ -477,6 +490,7 @@ function initFallbackIframe(url) {
     trailerPlayer.innerHTML = '';
     trailerPlayer.appendChild(iframe);
 }
+
 
 // UI Interaction Functions
 function toggleMobileMenu() {

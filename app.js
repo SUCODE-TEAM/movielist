@@ -324,6 +324,7 @@ function closeTrailer() {
     if (trailerModal && trailerPlayer) {
         trailerModal.classList.add('hidden');
         trailerPlayer.innerHTML = ''; // Stop video playing
+        window.onbeforeunload = null; // Matikan proteksi saat video ditutup
     }
 }
 
@@ -350,6 +351,21 @@ function openVideoModal() {
     
     if (serverSwitcher) serverSwitcher.style.display = 'flex';
     
+    // AKTIFKAN PERISAI LAPIS BAJA
+    const adShield = document.getElementById('adShield');
+    if (adShield) {
+        adShield.style.display = 'block';
+        adShield.onclick = function() {
+            this.style.display = 'none'; // Matikan perisai setelah memakan klik iklan
+            console.log("AdShield: Iklan pertama berhasil diblokir!");
+        };
+    }
+    
+    // PROTEKSI ANTI-REDIRECT (Mencegah web pindah ke situs judi)
+    window.onbeforeunload = function() {
+        return "Video sedang diputar. Tetap di sini untuk lanjut menonton?";
+    };
+    
     let url = '';
     if (currentMediaType === 'tv') {
         const season = document.getElementById('seasonSelect') ? document.getElementById('seasonSelect').value : 1;
@@ -360,7 +376,6 @@ function openVideoModal() {
     }
     
     if (trailerModal && trailerPlayer) {
-        // Player murni, tanpa batasan, membiarkan player bekerja sesuai aslinya
         trailerPlayer.innerHTML = '';
         const iframe = document.createElement('iframe');
         iframe.src = url;

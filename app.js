@@ -1,5 +1,8 @@
 const API_KEY = 'c88c94f12fcd99e29851e05850e1950f';
 const BASE_URL = 'https://api.themoviedb.org/3';
+const RESOLVER_URL = 'http://localhost:3000/api/resolve'; // Alamat Backend Resolver kita
+
+let playerInstance = null; // Penampung Player Sultan
 const IMG_URL = 'https://media.themoviedb.org/t/p/w500';
 const DONUT_IMG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%231a1d24'/%3E%3Ctext y='50%25' x='50%25' font-size='50' dominant-baseline='middle' text-anchor='middle'%3E🍩%3C/text%3E%3C/svg%3E";
 // DOM Elements
@@ -322,7 +325,17 @@ function closeTrailer() {
     const trailerPlayer = document.getElementById('trailerPlayer');
     
     if (trailerModal && trailerPlayer) {
-        window.isWatchingFilm = false; // Buka gembok agar bisa tutup modal
+        window.isWatchingFilm = false; 
+        
+        // Hancurkan Player Instance agar memori lega
+        if (playerInstance) {
+            playerInstance.destroy();
+            playerInstance = null;
+        }
+        if (window.hls) {
+            window.hls.destroy();
+        }
+
         trailerModal.classList.add('hidden');
         trailerPlayer.innerHTML = ''; 
         window.onbeforeunload = null; 
@@ -389,31 +402,69 @@ function openVideoModal() {
     }
 
     if (trailerModal && trailerPlayer) {
-        const iframe = document.createElement('iframe');
-        
-        // --- JURUS PEMBERSIH AWAN (.cc Edition) ---
-        // Kita gunakan vidsrc.cc murni tapi dengan perlindungan GANDA
-        iframe.src = url;
-        iframe.frameBorder = '0';
-        iframe.allowFullscreen = true;
-        iframe.setAttribute('allow', 'autoplay; encrypted-media; fullscreen; picture-in-picture');
-        iframe.style.width = '100%';
-        iframe.style.height = '100%';
-        iframe.style.border = 'none';
-        
-        // Gembok Navigasi (Mencegat Redirect)
-        window.isWatchingFilm = true;
-        window.onbeforeunload = function(e) {
-            if (window.isWatchingFilm) {
-                e.preventDefault();
-                e.returnValue = '';
-                return '';
-            }
-        };
-
-        trailerPlayer.appendChild(iframe);
+        trailerPlayer.innerHTML = '<div class="loading-sultan">Mengambil Link Video Bening...</div>';
         trailerModal.classList.remove('hidden');
+
+        // --- STRATEGI FINAL BOSS (DENGAN TIMEOUT 2 DETIK) ---
+        const season = document.getElementById('seasonSelect') ? document.getElementById('seasonSelect').value : 1;
+        const episode = document.getElementById('episodeSelect') ? document.getElementById('episodeSelect').value : 1;
+        
+        // Buat pengatur waktu (Timeout) agar tidak nunggu kelamaan
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 2000); // 2 detik saja!
+
+        fetch(`${RESOLVER_URL}?id=${currentPlayingId}&type=${currentMediaType}&s=${season}&e=${episode}`, { signal: controller.signal })
+            .then(res => res.json())
+            .then(data => {
+                clearTimeout(timeoutId);
+                if (data && data.url) {
+                    initSultanPlayer(data.url);
+                } else {
+                    initFallbackIframe(url);
+                }
+            })
+            .catch(() => {
+                // Jika error atau timeout, langsung lempar ke Iframe Cadangan
+                initFallbackIframe(url);
+            });
     }
+}
+
+// FUNGSI PLAYER SULTAN (Plyr + HLS)
+function initSultanPlayer(streamUrl) {
+    const trailerPlayer = document.getElementById('trailerPlayer');
+    trailerPlayer.innerHTML = `<video id="sultan-player" playsinline controls></video>`;
+    
+    const video = document.getElementById('sultan-player');
+    
+    if (Hls.isSupported()) {
+        const hls = new Hls();
+        hls.loadSource(streamUrl);
+        hls.attachMedia(video);
+        window.hls = hls;
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = streamUrl;
+    }
+
+    playerInstance = new Plyr(video, {
+        autoplay: true,
+        quality: { default: 1080, options: [1080, 720, 480] }
+    });
+}
+
+// FUNGSI CADANGAN (Iframe Stealth)
+function initFallbackIframe(url) {
+    const trailerPlayer = document.getElementById('trailerPlayer');
+    const iframe = document.createElement('iframe');
+    iframe.src = url;
+    iframe.frameBorder = '0';
+    iframe.allowFullscreen = true;
+    iframe.setAttribute('allow', 'autoplay; encrypted-media; fullscreen; picture-in-picture');
+    iframe.style.width = '100%';
+    iframe.style.height = '100%';
+    iframe.style.border = 'none';
+    trailerPlayer.innerHTML = '';
+    trailerPlayer.appendChild(iframe);
 }
 
 // UI Interaction Functions

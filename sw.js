@@ -1,51 +1,112 @@
-const AD_DOMAINS = [
-    'doubleclick.net', 'google-analytics.com', 'googlesyndication.com',
-    'popads.net', 'popcash.net', 'propellerads.com', 'exoclick.com',
-    'a.bestcontentfood.top', 'b.bestcontentfood.top', 'mads.com',
-    'onclickperformance.com', 'bet9ja.com', '1xbet.com', 'adsterra.com',
-    'vidsrc.stream', 'vidsrc.xyz/ads', 'monetag.com', 'rxtv.site', 'yousubtitles.com',
-    'protagads.com', 'bidgear.com', 'jads.co', 'vdo.ai', 'cloudup.com', 'videasy.net',
-    'highrevenuegate.com', 'voolemorp.com', 'steepto.com', 'vignette.wikia.nocookie.net'
+const AD_HOSTS = [
+    'doubleclick.net',
+    'google-analytics.com',
+    'googlesyndication.com',
+    'googletagmanager.com',
+    'adservice.google.com',
+    'popads.net',
+    'popcash.net',
+    'propellerads.com',
+    'exoclick.com',
+    'adsterra.com',
+    'monetag.com',
+    'onclickperformance.com',
+    'highrevenuegate.com',
+    'voolemorp.com',
+    'steepto.com',
+    'bestcontentfood.top',
+    'bidgear.com',
+    'protagads.com',
+    'jads.co',
+    'vdo.ai',
+    'yousubtitles.com',
+    'nofeu.com',
+    'terusmilo.xyz',
+    'sorrowfulpsychology.com',
+    'gulamerah.online'
 ];
-
 
 const AD_PATTERNS = [
-    '/ads/', '/pop/', 'vast', 'click', 'track', 'analytic', 'videasy.net/ads', 'videasy.net/pop',
-    'script.js?v=', 'layer.js', 'check.js', 'detect.js'
+    '/ads/',
+    '/ad/',
+    '/pop/',
+    'popunder',
+    'popup',
+    'prebid',
+    'vast',
+    'vpaid',
+    'preroll',
+    'onclick',
+    'banner',
+    'adserver',
+    'adservice',
+    'track.php',
+    'click.php'
 ];
 
-self.addEventListener('install', (event) => {
-    self.skipWaiting();
-});
+const MEDIA_EXTENSIONS = [
+    '.m3u8',
+    '.ts',
+    '.m4s',
+    '.mp4',
+    '.webm',
+    '.vtt',
+    '.srt',
+    '.mpd'
+];
 
-self.addEventListener('activate', (event) => {
-    event.waitUntil(clients.claim());
-});
+function hostMatches(hostname, blockedHost) {
+    return hostname === blockedHost || hostname.endsWith(`.${blockedHost}`);
+}
 
-self.addEventListener('fetch', (event) => {
-    const url = new URL(event.request.url);
-    
-    // Cek domain iklan
-    const isAdDomain = AD_DOMAINS.some(domain => url.hostname.includes(domain));
-    
-    // Cek pola iklan di URL
-    const isAdPattern = AD_PATTERNS.some(pattern => url.href.toLowerCase().includes(pattern.toLowerCase()));
-    
-    if (isAdDomain || isAdPattern) {
-        // JANGAN blokir manifest (.m3u8), segmen (.ts), atau file utama player (.js utama)
-        // Kita hanya blokir script yang mencurigakan
-        const isCriticalFile = url.href.includes('.m3u8') || url.href.includes('.ts') || 
-                               (url.hostname.includes('videasy.net') && url.pathname.includes('/movie/'));
+function isMediaRequest(url) {
+    const pathname = url.pathname.toLowerCase();
 
-        if (!isCriticalFile) {
-            console.warn(`[Ad-Block] Memblokir request iklan: ${url.href.substring(0, 70)}...`);
-            event.respondWith(new Response('', { status: 204 }));
-            return;
-        }
+    if (url.origin === self.location.origin && pathname.startsWith('/api/proxy')) {
+        return true;
     }
 
-    event.respondWith(fetch(event.request).catch(() => fetch(event.request, { mode: 'no-cors' })));
+    return MEDIA_EXTENSIONS.some(extension => pathname.endsWith(extension));
+}
+
+function shouldBlock(url) {
+    if (!/^https?:$/.test(url.protocol) || isMediaRequest(url)) {
+        return false;
+    }
+
+    const hostname = url.hostname.toLowerCase();
+    const href = url.href.toLowerCase();
+
+    return AD_HOSTS.some(host => hostMatches(hostname, host)) ||
+        AD_PATTERNS.some(pattern => href.includes(pattern));
+}
+
+self.addEventListener('install', event => {
+    event.waitUntil(self.skipWaiting());
 });
 
+self.addEventListener('activate', event => {
+    event.waitUntil(self.clients.claim());
+});
 
+self.addEventListener('fetch', event => {
+    let url;
 
+    try {
+        url = new URL(event.request.url);
+    } catch (_) {
+        return;
+    }
+
+    if (shouldBlock(url)) {
+        event.respondWith(new Response('', {
+            status: 204,
+            headers: {
+                'X-MovieList-Blocked': '1'
+            }
+        }));
+        return;
+    }
+
+    event.respondWith(fetch(event.request));
+});

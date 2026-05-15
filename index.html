@@ -3,77 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <meta name="description" content="MovieList - Platform terbaik untuk menemukan dan menonton film favorit Anda. Jelajahi ribuan film dengan trailer, rating, dan ulasan lengkap.">
     <meta name="keywords" content="movie, film, nonton, streaming, trailer, review, rating">
     <meta name="author" content="MovieList">
     <meta name="referrer" content="no-referrer">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; img-src 'self' data: https://media.themoviedb.org https://image.tmdb.org; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.plyr.io; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://cdn.plyr.io https://cdn.jsdelivr.net; connect-src 'self' https://api.themoviedb.org https://media.themoviedb.org https://image.tmdb.org http://*:3000; media-src 'self' blob: data: https: http:; frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://player.videasy.net https://videasy.net https://*.videasy.net https://vidsrc.cc https://*.vidsrc.cc https://vidsrc.xyz https://*.vidsrc.xyz https://vidsrc.pm https://*.vidsrc.pm; worker-src 'self';">
     <title>MovieList - Nonton Film Gratis | Katalog Film Terlengkap</title>
-    <script>
-        // --- MOVIELIST AD-ANNIHILATOR (VERCEL READY) ---
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').then(reg => {
-                    console.log('🛡️ MovieList Ad-Annihilator: ACTIVE');
-                }).catch(err => console.error('SW Registration failed:', err));
-            });
-        }
-
-        // --- GLOBAL STEALTH HIJACKER V2 (MOBILE OPTIMIZED) ---
-        (function() {
-            window.isWatchingFilm = false; 
-
-            // 1. Matikan Jebakan Debugger (Lebih Agresif)
-            const originalConstructor = Function.prototype.constructor;
-            Function.prototype.constructor = function(str) {
-                if (typeof str === 'string' && str.includes('debugger')) {
-                    console.log('🛡️ Debugger trap neutralized');
-                    return function() {};
-                }
-                return originalConstructor.apply(this, arguments);
-            };
-            // Matikan juga eval debugger
-            window.eval = (function(oldEval) {
-                return function(str) {
-                    if (str.includes('debugger')) return;
-                    return oldEval(str);
-                };
-            })(window.eval);
-
-
-            // 2. Gembok Fungsi Window
-            window.open = function() { return { focus: function(){} }; };
-            window.alert = function() { return true; };
-            window.confirm = function() { return true; };
-
-
-            // 2. Mobile Touch Protector
-            const killAds = (e) => {
-                if (window.isWatchingFilm && e.target.tagName !== 'VIDEO' && e.target.tagName !== 'BUTTON' && !e.target.closest('.plyr')) {
-                    const zIndex = window.getComputedStyle(e.target).zIndex;
-                    if (zIndex > 100 || zIndex === 'auto') {
-                        // Jangan biarkan klik tembus ke iklan transparan
-                    }
-                }
-            };
-            document.addEventListener('touchstart', killAds, { passive: true });
-            document.addEventListener('click', killAds, true);
-
-
-            // 4. Deteksi & Musnahkan Overlay Iklan Transparan (Loop Cepat)
-            setInterval(() => {
-                const ads = document.querySelectorAll('div[style*="fixed"], div[style*="absolute"], [class*="ad-"], [id*="ad-"]');
-                ads.forEach(ad => {
-                    if (!ad.closest('.plyr') && !ad.closest('.modal') && !ad.closest('.nav')) {
-                        const style = window.getComputedStyle(ad);
-                        if (parseInt(style.zIndex) > 100 || style.position === 'fixed') {
-                            ad.remove();
-                        }
-                    }
-                });
-            }, 500);
-        })();
-
-    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -548,6 +484,7 @@
         </div>
     </footer>
 
+    <script src="adguard.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

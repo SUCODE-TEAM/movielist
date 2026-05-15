@@ -331,7 +331,11 @@ function closeTrailer() {
     const trailerPlayer = document.getElementById('trailerPlayer');
     
     if (trailerModal && trailerPlayer) {
-        window.isWatchingFilm = false; 
+        if (window.MovieListAdGuard) {
+            window.MovieListAdGuard.disablePlayback();
+        } else {
+            window.isWatchingFilm = false;
+        }
         
         // Hancurkan Player Instance agar memori lega
         if (playerInstance) {
@@ -344,8 +348,6 @@ function closeTrailer() {
 
         trailerModal.classList.add('hidden');
         trailerPlayer.innerHTML = ''; 
-        window.onbeforeunload = null; 
-        window.open = window._originalOpen || window.open;
     }
 }
 
@@ -366,11 +368,15 @@ function playFullMovieHero() {
 function openVideoModal() {
     if (!currentPlayingId) return;
 
-    window.isWatchingFilm = true; 
+    if (window.MovieListAdGuard) {
+        window.MovieListAdGuard.enablePlayback();
+    } else {
+        window.isWatchingFilm = true;
+    }
+
     const trailerModal = document.getElementById('trailerModal');
     const trailerPlayer = document.getElementById('trailerPlayer');
     const serverSwitcher = document.getElementById('serverSwitcher');
-    const adShield = document.getElementById('adShield');
 
     if (serverSwitcher) {
         console.log('🛡️ Menampilkan Tombol Fullscreen...');
@@ -380,40 +386,13 @@ function openVideoModal() {
         serverSwitcher.style.setProperty('opacity', '1', 'important');
     }
     if (trailerPlayer) trailerPlayer.innerHTML = '';
-
-
-
-    // --- GEMBOK ANTI-REDIRECT MUTLAK ---
-    window.isWatchingFilm = true; // Flag untuk mengaktifkan gembok
-    
-    // Gembok fungsi window.open (Popup)
-    window.open = function () { return null; };
-
-    // Pasang Gembok Pintu Keluar
-    window.onbeforeunload = function(e) {
-        if (window.isWatchingFilm) {
-            e.preventDefault();
-            e.returnValue = ''; // Munculkan dialog konfirmasi browser
-            return '';
-        }
-    };
-
-    // Perisai Klik Siluman (1 Lapis)
-    if (adShield) {
-        adShield.style.display = 'block';
-        adShield.onclick = function (e) {
-            e.preventDefault();
-            this.style.display = 'none';
-        };
-    }
-
     let url = '';
     if (currentMediaType === 'tv') {
         const season = document.getElementById('seasonSelect') ? document.getElementById('seasonSelect').value : 1;
         const episode = document.getElementById('episodeSelect') ? document.getElementById('episodeSelect').value : 1;
-        url = `https://vidsrc.cc/v2/embed/tv/${currentPlayingId}/${season}/${episode}`;
+        url = `https://player.videasy.net/tv/${currentPlayingId}/${season}/${episode}?episodeSelector=true&nextEpisode=true&color=f43f5e`;
     } else {
-        url = `https://vidsrc.cc/v2/embed/movie/${currentPlayingId}`;
+        url = `https://player.videasy.net/movie/${currentPlayingId}?color=f43f5e`;
     }
 
     if (trailerModal && trailerPlayer) {
@@ -477,8 +456,13 @@ function initFallbackIframe(url) {
     const trailerPlayer = document.getElementById('trailerPlayer');
     const iframe = document.createElement('iframe');
     iframe.src = url;
+    iframe.title = currentMovieTitle ? `${currentMovieTitle} player` : 'Movie player';
     iframe.frameBorder = '0';
     iframe.setAttribute('allow', 'autoplay; encrypted-media; fullscreen; picture-in-picture');
+    iframe.setAttribute('allowfullscreen', 'true');
+    iframe.setAttribute('webkitallowfullscreen', 'true');
+    iframe.setAttribute('mozallowfullscreen', 'true');
+    iframe.setAttribute('referrerpolicy', 'origin');
 
     iframe.style.width = '100%';
     iframe.style.height = '100%';
